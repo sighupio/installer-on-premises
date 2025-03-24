@@ -71,6 +71,8 @@
     regexp: "^  name: kubeadm-config$"
     state: absent
 
+# When changing the configuration we also have to keep the ClusterConfiguration
+# ConfigMap aligned with these changes.
 - name: Apply new kubeadm-config configmap
   ansible.builtin.shell: >
     kubectl apply -f <(kubectl create configmap kubeadm-config -n kube-system
