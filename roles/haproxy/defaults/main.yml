@@ -13,6 +13,9 @@ haproxy_package:
   RedHat:
     name: "haproxy30z"
     version: "30z"
+  AlmaLinux:
+    name: "haproxy30z"
+    version: "30z"
 keepalived_cluster: false
 keepalived_interface: "ens192"
 keepalived_on_k8s_master: false
