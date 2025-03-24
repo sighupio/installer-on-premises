@@ -75,7 +75,7 @@
 
 - name: Generate ClusterConfiguration file from template
   ansible.builtin.template:
-    src: ClusterConfiguration.yml.j2
+    src: ClusterConfiguration-v1beta4.yml.j2
     dest: "{{ kubeadm_config_path }}/ClusterConfiguration-patch.yaml"
     mode: '0644'
   register: kubeadm_template
@@ -85,15 +85,6 @@
   when:
     - super_admin_conf_stat_result.stat.exists or admin_conf_stat_result.stat.exists
     - kubeadm_template.changed
-
-- name: Check if kubelet config file exists
-  ansible.builtin.stat:
-    path: /var/lib/kubelet/config.yaml
-  register: kubelet_config_file
-
-- name: Reconfigure kubelet
-  ansible.builtin.include_tasks: reconfigure-kubelet.yml
-  when: kubelet_config_file.stat.exists
 
 - name: Initializing master
   command: "kubeadm init --config={{ kubeadm_config_file }}"
@@ -146,6 +137,15 @@
     dest: "{{ kubernetes_kubeconfig_path }}/super-admin.conf"
     flat: yes
   when: (super_admin_conf_stat_result.stat.exists | default(false)) and (kubernetes_version is version('1.29.0', 'ge', version_type='semver'))
+
+- name: Check if kubelet config file exists
+  ansible.builtin.stat:
+    path: /var/lib/kubelet/config.yaml
+  register: kubelet_config_file
+
+- name: Reconfigure kubelet
+  ansible.builtin.include_tasks: reconfigure-kubelet.yml
+  when: kubelet_config_file.stat.exists
 
 - include_tasks: upgrade.yml
   when: upgrade

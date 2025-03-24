@@ -25,3 +25,14 @@
 - name: Upgrade kubernetes master with kubeadm
   ansible.builtin.command: kubeadm upgrade apply --config /etc/kubernetes/kubeadm-upgrade-config.yml
   when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')
+
+- name: Generate KubeletConfiguration patches file from template
+  ansible.builtin.template:
+    src: KubeletConfiguration-v1beta1.yml.j2
+    dest: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
+    mode: '0644'
+  changed_when: true
+  notify:
+    - Apply kubelet-config patches
+    - Restart kubelet
+  when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')
