@@ -10,7 +10,6 @@
 - name: Set timestamp
   ansible.builtin.set_fact:
     timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
-    mode: '0644'
 
 - name: Backup current kubelet configuration file
   ansible.builtin.copy:
@@ -21,7 +20,7 @@
 
 - name: Generate patches file from template
   ansible.builtin.template:
-    src: KubeletConfiguration.yml.j2
+    src: KubeletConfiguration-v1beta1.yml.j2
     dest: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
     mode: '0644'
   notify:
