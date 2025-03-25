@@ -1,0 +1,119 @@
+{
+    "definitions": {
+      "v1beta4.ClusterConfiguration": {
+        "type": "object",
+        "properties": {
+          "imageRepository": { "type": "string" },
+          "apiServer": {
+            "type": "object",
+            "properties": {
+              "extraArgs": {
+                "type": "array",
+                "x-kubernetes-patch-merge-key": "name",
+                "x-kubernetes-patch-strategy": "merge",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "value": { "type": "string" },
+                    "$patch": { "type": "string" }
+                  }
+                }
+              },
+              "extraVolumes": {
+                "type": "array",
+                "x-kubernetes-patch-merge-key": "name",
+                "x-kubernetes-patch-strategy": "merge",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "hostPath": { "type": "string" },
+                    "mountPath": { "type": "string" },
+                    "readOnly": { "type": "boolean" },
+                    "pathType": { "type": "string" },
+                    "$patch": { "type": "string" }
+                  }
+                }
+              },
+              "certSANs": {
+                "type": "array",
+                "x-kubernetes-patch-strategy": "merge"
+              }
+            }
+          },
+          "controllerManager": {
+            "type": "object",
+            "properties": {
+              "extraArgs": {
+                "type": "array",
+                "x-kubernetes-patch-merge-key": "name",
+                "x-kubernetes-patch-strategy": "merge",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "value": { "type": "string" },
+                    "$patch": { "type": "string" }
+                  }
+                }
+              },
+              "extraVolumes": {
+                "type": "array",
+                "x-kubernetes-patch-merge-key": "name",
+                "x-kubernetes-patch-strategy": "merge",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "hostPath": { "type": "string" },
+                    "mountPath": { "type": "string" },
+                    "readOnly": { "type": "boolean" },
+                    "pathType": { "type": "string" },
+                    "$patch": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "scheduler": {
+            "type": "object",
+            "properties": {
+              "extraArgs": {
+                "type": "array",
+                "x-kubernetes-patch-merge-key": "name",
+                "x-kubernetes-patch-strategy": "merge",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "value": { "type": "string" },
+                    "$patch": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "networking": {
+            "type": "object",
+            "properties": {
+              "podSubnet": { "type": "string" },
+              "serviceSubnet": { "type": "string" },
+              "dnsDomain": { "type": "string" }
+            }
+          },
+          "dns": {
+            "type": "object",
+            "properties": {
+              "imageRepository": { "type": "string" }
+            }
+          }
+        },
+        "x-kubernetes-group-version-kind": [{
+          "group": "kubeadm.k8s.io",
+          "kind": "ClusterConfiguration",
+          "version": "v1beta4"
+        }]
+      }
+    }
+  }

@@ -40,8 +40,6 @@
 # We are patching the bind-address of the kube-scheduler and kube-controller-manager
 # to be able to scrape metrics from them (kubeadm's feault is 127.0.0.1), we have
 # to patch the liveness and startup probe too in consequence.
-# NOTE: the same patches used here are used for the upgrades, so if you add new
-# patches remember to add them also in the upgrade.yml file.
 - name: Ensuring the patches directory exists
   ansible.builtin.file:
     path: "{{ kubeadm_patches_path }}"
@@ -53,10 +51,40 @@
     src: patches/kube-scheduler0+json.json.j2
     dest: "{{ kubeadm_patches_path }}/kube-scheduler0+json.json"
 
+# Kubernetes 1.32+ introduces the readinessProbe in kube-scheduler, so
+# we need two patch files to manage this. Kubeadm applies all patches that follow the
+# naming pattern kube-scheduler<INDEX>+json.json, where <INDEX> determines application order.
+# Now we have 2 patches, the index 0 common for all versions and the index 1
+# that's applied on top only for K8s 1.32.0 or newer.
+- name: Copy kube-scheduler patch files for versions greater than or equal to 1.32.0
+  ansible.builtin.template:
+    src: patches/kube-scheduler1+json.json.j2
+    dest: "{{ kubeadm_patches_path }}/kube-scheduler1+json.json"
+  when: kubernetes_version is version('1.32.0', 'ge', version_type='semver')
+
 - name: Copy kube-controller-manager patch files
   ansible.builtin.template:
     src: patches/kube-controller-manager0+json.json.j2
     dest: "{{ kubeadm_patches_path }}/kube-controller-manager0+json.json"
+
+- name: Ensuring the kubeadm-config directory exists
+  ansible.builtin.file:
+    path: "{{ kubeadm_config_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Generate ClusterConfiguration file from template
+  ansible.builtin.template:
+    src: ClusterConfiguration-v1beta4.yml.j2
+    dest: "{{ kubeadm_config_path }}/ClusterConfiguration-patch.yaml"
+    mode: '0644'
+  register: kubeadm_template
+
+- name: Reconfigure kube-* components
+  ansible.builtin.include_tasks: reconfigure-kube-star-components.yml
+  when:
+    - super_admin_conf_stat_result.stat.exists or admin_conf_stat_result.stat.exists
+    - kubeadm_template.changed
 
 - name: Initializing master
   command: "kubeadm init --config={{ kubeadm_config_file }}"
@@ -109,6 +137,15 @@
     dest: "{{ kubernetes_kubeconfig_path }}/super-admin.conf"
     flat: yes
   when: (super_admin_conf_stat_result.stat.exists | default(false)) and (kubernetes_version is version('1.29.0', 'ge', version_type='semver'))
+
+- name: Check if kubelet config file exists
+  ansible.builtin.stat:
+    path: /var/lib/kubelet/config.yaml
+  register: kubelet_config_file
+
+- name: Reconfigure kubelet
+  ansible.builtin.include_tasks: reconfigure-kubelet.yml
+  when: kubelet_config_file.stat.exists
 
 - include_tasks: upgrade.yml
   when: upgrade

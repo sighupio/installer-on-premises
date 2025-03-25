@@ -5,7 +5,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-v1.31.4--rev.1-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.32.3-blue)
 ![License](https://img.shields.io/github/license/sighupio/fury-kubernetes-on-premises?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -26,9 +26,9 @@ The following packages are included in the Fury Kubernetes on-premises module:
 
 | Package                                        | Version  | Description                                                                   |
 | ---------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
-| [etcd](roles/etcd)                             | `3.5.15` | Ansible role to install etcd as systemd service                               |
+| [etcd](roles/etcd)                             | `3.5.16` | Ansible role to install etcd as systemd service                               |
 | [haproxy](roles/haproxy)                       | `3.0`    | Ansible role to install HAProxy as Kubernetes load balancer for the APIServer |
-| [containerd](roles/containerd)                 | `1.7.23` | Ansible role to install containerd as container runtime                       |
+| [containerd](roles/containerd)                 | `1.7.26` | Ansible role to install containerd as container runtime                       |
 | [kube-node-common](roles/kube-node-common)     | `-`      | Ansible role to install prerequisites for Kubernetes setup                    |
 | [kube-control-plane](roles/kube-control-plane) | `-`      | Ansible role to install control-plane nodes                                   |
 | [kube-worker](roles/kube-worker)               | `-`      | Ansible role to install worker nodes and join them to the cluster             |
@@ -37,14 +37,12 @@ Click on each package to see its full documentation.
 
 ## Compatibility
 
-This version is compatible with Kubernetes 1.31.4 plus the complete list in the compatibility matrix.
+This version is compatible with Kubernetes 1.32.3 plus the complete list in the compatibility matrix.
 
 Check the [compatibility matrix][compatibility-matrix] for additional information about previous releases of the module.
 
 > [!WARNING]
-> Since ARM support is still in *beta*, at the moment there
-> is no support for HAProxy 3.0 in RHEL/RHEL-derivatives running
-> on ARM hardware.
+> Support for the ARM platform is still in beta status, the Load Balancers installed with the `haproxy` role are not currently supported for RHEL and RHEL derivatives running on ARM. Please use a different OS for the Load Balancers VMs (or disable them and create your own load balancer).
 
 ## Usage
 
@@ -52,7 +50,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 
 | Tool                    | Version    | Description                                                                                                                                                |
 | ----------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [furyctl][furyctl-repo] | `>=0.31.0` | The recommended tool to download and manage KFD modules and their packages. To learn more about `furyctl` read the [official documentation][furyctl-repo]. |
+| [furyctl][furyctl-repo] | `>=0.32.0` | The recommended tool to download and manage KFD modules and their packages. To learn more about `furyctl` read the [official documentation][furyctl-repo]. |
 
 ### Legacy provisioning
 
@@ -66,7 +64,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 roles:
   - name: on-premises
-    version: v1.31.4-rev.1
+    version: v1.32.3
 ```
 
 1. Execute `furyctl legacy vendor -H` to download the roles

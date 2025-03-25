@@ -1,0 +1,91 @@
+- name: Ensuring the kubeadm-config backup directory exists
+  ansible.builtin.file:
+    path: "{{ kubeadm_config_path }}/backups/"
+    state: directory
+    mode: "0755"
+
+- name: Set timestamp
+  ansible.builtin.set_fact:
+    timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
+
+- name: Backup current kubeadm-config configmap
+  ansible.builtin.shell: >
+    kubectl -n kube-system get cm kubeadm-config
+    -o yaml --kubeconfig /etc/kubernetes/admin.conf
+    > {{ kubeadm_config_path }}/backups/kubeadm-config-backup-{{ timestamp }}.yaml
+  changed_when: false
+
+- name: Dump kubeadm-config data
+  ansible.builtin.shell: >
+    kubectl -n kube-system get cm kubeadm-config
+    -o jsonpath='{.data.ClusterConfiguration}'
+    --kubeconfig /etc/kubernetes/admin.conf
+    > {{ kubeadm_config_path }}/kubeadm-config-ClusterConfiguration-dump.yaml
+  changed_when: false
+
+- name: Add metadata field on kubeadm-config dump file
+  ansible.builtin.lineinfile:
+    path: "{{ kubeadm_config_path }}/kubeadm-config-ClusterConfiguration-dump.yaml"
+    line: "metadata:"
+    insertbefore: BOF
+    state: present
+    firstmatch: true
+    regexp: "^metadata:$"
+
+- name: Add metadata.name field on kubeadm-config dump file
+  ansible.builtin.lineinfile:
+    path: "{{ kubeadm_config_path }}/kubeadm-config-ClusterConfiguration-dump.yaml"
+    line: "  name: kubeadm-config"
+    insertafter: "^metadata:$"
+    state: present
+    firstmatch: true
+    regexp: "^  name: kubeadm-config$"
+
+- name: Copy openapi spec file
+  ansible.builtin.copy:
+    src: cc-openapi-spec.json
+    dest: "{{ kubeadm_config_path }}/cc-openapi-spec.json"
+    mode: '0644'
+
+- name: Copy kustomization file
+  ansible.builtin.copy:
+    src: kustomization.yaml
+    dest: "{{ kubeadm_config_path }}/kustomization.yaml"
+    mode: '0644'
+  changed_when: false
+
+- name: Generate kubeadm-config new configuration
+  ansible.builtin.shell: |
+    kubectl kustomize {{ kubeadm_config_path }}/ > {{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml
+  changed_when: false
+
+- name: Remove metadata field from kubeadm-config patched file
+  ansible.builtin.lineinfile:
+    path: "{{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml"
+    regexp: "^metadata:$"
+    state: absent
+
+- name: Remove metadata.name field from kubeadm-config patched file
+  ansible.builtin.lineinfile:
+    path: "{{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml"
+    regexp: "^  name: kubeadm-config$"
+    state: absent
+
+# When changing the configuration we also have to keep the ClusterConfiguration
+# ConfigMap aligned with these changes.
+- name: Apply new kubeadm-config configmap
+  ansible.builtin.shell: >
+    kubectl apply -f <(kubectl create configmap kubeadm-config -n kube-system
+    --from-file=ClusterConfiguration={{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml
+    --dry-run=client -o yaml) --kubeconfig /etc/kubernetes/admin.conf
+  args:
+    executable: /bin/bash
+  changed_when: false
+
+# By passing only the ClusterConfiguration object, the InitConfiguration patches are lost.
+# To fix this we need to pass the InitConfiguration object as well, using the kubeadm.yml.
+- name: Reflect ClusterConfiguration changes on control plane components
+  ansible.builtin.shell: |
+    kubeadm init phase control-plane all --config {{ kubeadm_config_file }}
+  changed_when: true
+  notify: Restart kubelet

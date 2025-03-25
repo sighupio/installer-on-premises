@@ -14,3 +14,15 @@
   command: "kubeadm join --config {{ kubeadm_config_file }}"
   when:
     - not node_kubelet_conf.stat.exists
+
+- name: Check if kubelet config file exists
+  ansible.builtin.stat:
+    path: /var/lib/kubelet/config.yaml
+  register: kubelet_config_file
+
+# Needed because in cases of joining new nodes, at the first run the config.yaml
+# is not set by the KubeletConfiguration but is read from the ConfigMap, so
+# the node would have a different configuration from the other nodes.
+- name: Reconfigure kubelet
+  ansible.builtin.include_tasks: reconfigure-kubelet.yml
+  when: kubelet_config_file.stat.exists

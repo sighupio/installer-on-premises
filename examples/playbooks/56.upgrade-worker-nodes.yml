@@ -24,6 +24,13 @@
   tasks:
     - name: Upgrade kubelet config
       shell: "kubeadm upgrade node"
+    - name: Check that the kubeletconfiguration.yaml exists
+      stat:
+        path: /var/lib/kubelet/kubelet-config/patches/kubeletconfiguration.yaml
+      register: kubeletconfiguration_result
+    - name: Apply kubelet patches
+      shell: "kubeadm upgrade node phase kubelet-config --patches /var/lib/kubelet/kubelet-config/patches/"
+      when: kubeletconfiguration_result.stat.exists
 
 - name: Kubelet and Containerd upgrade
   hosts: nodes

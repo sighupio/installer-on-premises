@@ -1,6 +1,7 @@
 ---
 etcd_name: "{{ inventory_hostname }}"
-etcd_version: v3.5.15
+# check compatibility on this link https://github.com/kubernetes/kubernetes/blob/v1.32.3/cmd/kubeadm/app/constants/constants.go (change the version accordingly)
+etcd_version: v3.5.16
 etcd_download_url: https://storage.googleapis.com/etcd
 etcd_data_dir: /var/lib/etcd
 etcd_binary_dir: /usr/local/bin
@@ -16,4 +17,4 @@ etcd_certs:
   - apiserver-etcd-client.key
 etcd_on_control_plane: true
 etcd_upgrade: false
-tls_cipher_suites: ""
+

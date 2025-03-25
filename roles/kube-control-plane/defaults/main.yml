@@ -2,6 +2,8 @@
 kubeadm_config_file: /etc/kubernetes/kubeadm.yml
 kubeadm_upgrade_config_file: /etc/kubernetes/kubeadm-upgrade-config.yml
 kubeadm_patches_path: /etc/kubernetes/patches/
+kubeadm_config_path: /etc/kubernetes/kubeadm-config
+kubelet_config_path: /var/lib/kubelet/kubelet-config
 audit_log_dir: /var/log/kubernetes
 audit_policy_max_age: 3
 audit_policy_config_path: /etc/kubernetes/audit.yaml
@@ -17,7 +19,7 @@ kubernetes_cloud_config: ""
 # Accepts a list of strings, in which each string can be either an IP Address or a domain
 kubernetes_apiserver_certSANs: []
 kubernetes_control_plane_address: "{{ ansible_hostname }}"
-kubernetes_version: "1.31.4"
+kubernetes_version: "1.32.3"
 kubernetes_image_registry: "{{ dependencies[kubernetes_version].kubernetes_image_registry }}"
 coredns_image_prefix: "{{ dependencies[kubernetes_version].coredns_image_prefix | default('/coredns') }}"
 kubernetes_hostname: "{{ ansible_fqdn }}"
@@ -27,7 +29,7 @@ kubernetes_users_org: sighup
 kubernetes_users_kubeconfig_dir: /etc/kubernetes/users
 kubernetes_encryption_config: ""
 kubernetes_remote_encryption_config: "/etc/kubernetes/encryption-config.yml"
-tls_cipher_suites: ""
+
 etcd:
   endpoints:
     - "https://127.0.0.1:2379"
@@ -58,5 +60,11 @@ dependencies:
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.30.6":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
+  "1.30.11":
+    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.31.4":
+    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
+  "1.31.7":
+    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
+  "1.32.3":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"

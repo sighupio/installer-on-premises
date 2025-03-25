@@ -1,5 +1,6 @@
 ---
 kubeadm_config_file: /etc/kubernetes/kubeadm.yml
+kubelet_config_path: /var/lib/kubelet/kubelet-config
 kubernetes_control_plane_address: "{{ ansible_fqdn }}"
 kubernetes_bootstrap_token: ""
 kubernetes_ca_hash: ""

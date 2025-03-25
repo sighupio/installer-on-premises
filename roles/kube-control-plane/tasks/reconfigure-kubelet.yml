@@ -1,0 +1,29 @@
+- name: Ensuring the kubelet-config directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ kubelet_config_path }}/patches/"
+    - "{{ kubelet_config_path }}/backups/"
+
+- name: Set timestamp
+  ansible.builtin.set_fact:
+    timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
+
+- name: Backup current kubelet configuration file
+  ansible.builtin.copy:
+    src: /var/lib/kubelet/config.yaml
+    dest: "{{ kubelet_config_path }}/backups/kubelet-config-backup-{{ timestamp }}.yaml"
+    remote_src: true
+    mode: '0644'
+
+- name: Generate KubeletConfiguration patches file from template
+  ansible.builtin.template:
+    src: KubeletConfiguration-v1beta1.yml.j2
+    dest: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
+    mode: '0644'
+  when: not upgrade
+  notify:
+    - Apply kubelet-config patches
+    - Restart kubelet

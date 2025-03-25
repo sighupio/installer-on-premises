@@ -1,0 +1,15 @@
+---
+# We only upgrade nodes with local patches, and not the ConfigMap, because
+# the nodes might have different kubelet configurations from each other.
+- name: Apply kubelet-config patches
+  ansible.builtin.shell: |
+    kubeadm upgrade node phase kubelet-config --patches {{ kubelet_config_path }}/patches/
+  changed_when: false
+  listen: Apply kubelet-config patches
+
+- name: Restart kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: true
+  listen: Restart kubelet

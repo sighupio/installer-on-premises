@@ -1,0 +1,362 @@
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+metadata:
+  name: kubelet-config
+
+{% if kubelet_config_enable_server is defined %}
+enableServer: {{ kubelet_config_enable_server }}
+{% endif %}
+{% if kubelet_config_static_pod_path is defined %}
+staticPodPath: {{ kubelet_config_static_pod_path }}
+{% endif %}
+{% if kubelet_config_pod_logs_dir is defined %}
+podLogsDir: {{ kubelet_config_pod_logs_dir }}
+{% endif %}
+{% if kubelet_config_sync_frequency is defined %}
+syncFrequency: {{ kubelet_config_sync_frequency }}
+{% endif %}
+{% if kubelet_config_file_check_frequency is defined %}
+fileCheckFrequency: {{ kubelet_config_file_check_frequency }}
+{% endif %}
+{% if kubelet_config_http_check_frequency is defined %}
+httpCheckFrequency: {{ kubelet_config_http_check_frequency }}
+{% endif %}
+{% if kubelet_config_static_pod_url is defined %}
+staticPodURL: {{ kubelet_config_static_pod_url }}
+{% endif %}
+{% if kubelet_config_static_pod_url_header is defined %}
+staticPodURLHeader: {{ kubelet_config_static_pod_url_header | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_address is defined %}
+address: {{ kubelet_config_address }}
+{% endif %}
+{% if kubelet_config_port is defined %}
+port: {{ kubelet_config_port }}
+{% endif %}
+{% if kubelet_config_read_only_port is defined %}
+readOnlyPort: {{ kubelet_config_read_only_port }}
+{% endif %}
+{% if kubelet_config_tls_cert_file is defined %}
+tlsCertFile: {{ kubelet_config_tls_cert_file }}
+{% endif %}
+{% if kubelet_config_tls_private_key_file is defined %}
+tlsPrivateKeyFile: {{ kubelet_config_tls_private_key_file }}
+{% endif %}
+{% if tls_cipher_suites is defined %}
+tlsCipherSuites: {{ tls_cipher_suites | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_tls_min_version is defined %}
+tlsMinVersion: {{ kubelet_config_tls_min_version }}
+{% endif %}
+{% if kubelet_config_rotate_certificates is defined %}
+rotateCertificates: {{ kubelet_config_rotate_certificates }}
+{% endif %}
+{% if kubelet_config_server_tls_bootstrap is defined %}
+serverTLSBootstrap: {{ kubelet_config_server_tls_bootstrap }}
+{% endif %}
+{% if kubelet_config_authentication is defined %}
+authentication: {{ kubelet_config_authentication | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_authorization is defined %}
+authorization: {{ kubelet_config_authorization | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_registry_pull_qps is defined %}
+registryPullQPS: {{ kubelet_config_registry_pull_qps }}
+{% endif %}
+{% if kubelet_config_registry_burst is defined %}
+registryBurst: {{ kubelet_config_registry_burst }}
+{% endif %}
+{% if kubelet_config_event_record_qps is defined %}
+eventRecordQPS: {{ kubelet_config_event_record_qps }}
+{% endif %}
+{% if kubelet_config_event_burst is defined %}
+eventBurst: {{ kubelet_config_event_burst }}
+{% endif %}
+{% if kubelet_config_enable_debugging_handlers is defined %}
+enableDebuggingHandlers: {{ kubelet_config_enable_debugging_handlers }}
+{% endif %}
+{% if kubelet_config_enable_contention_profiling is defined %}
+enableContentionProfiling: {{ kubelet_config_enable_contention_profiling }}
+{% endif %}
+{% if kubelet_config_healthz_port is defined %}
+healthzPort: {{ kubelet_config_healthz_port }}
+{% endif %}
+{% if kubelet_config_healthz_bind_address is defined %}
+healthzBindAddress: {{ kubelet_config_healthz_bind_address }}
+{% endif %}
+{% if kubelet_config_oom_score_adj is defined %}
+oomScoreAdj: {{ kubelet_config_oom_score_adj }}
+{% endif %}
+{% if kubelet_config_cluster_domain is defined %}
+clusterDomain: {{ kubelet_config_cluster_domain }}
+{% endif %}
+{% if kubelet_config_cluster_dns is defined %}
+clusterDNS: {{ kubelet_config_cluster_dns | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_streaming_connection_idle_timeout is defined %}
+streamingConnectionIdleTimeout: {{ kubelet_config_streaming_connection_idle_timeout }}
+{% endif %}
+{% if kubelet_config_node_status_update_frequency is defined %}
+nodeStatusUpdateFrequency: {{ kubelet_config_node_status_update_frequency }}
+{% endif %}
+{% if kubelet_config_node_status_report_frequency is defined %}
+nodeStatusReportFrequency: {{ kubelet_config_node_status_report_frequency }}
+{% endif %}
+{% if kubelet_config_node_lease_duration_seconds is defined %}
+nodeLeaseDurationSeconds: {{ kubelet_config_node_lease_duration_seconds }}
+{% endif %}
+{% if kubelet_config_image_minimum_gc_age is defined %}
+imageMinimumGCAge: {{ kubelet_config_image_minimum_gc_age }}
+{% endif %}
+{% if kubelet_config_image_maximum_gc_age is defined %}
+imageMaximumGCAge: {{ kubelet_config_image_maximum_gc_age }}
+{% endif %}
+{% if kubelet_config_image_gc_high_threshold_percent is defined %}
+imageGCHighThresholdPercent: {{ kubelet_config_image_gc_high_threshold_percent }}
+{% endif %}
+{% if kubelet_config_image_gc_low_threshold_percent is defined %}
+imageGCLowThresholdPercent: {{ kubelet_config_image_gc_low_threshold_percent }}
+{% endif %}
+{% if kubelet_config_volume_stats_agg_period is defined %}
+volumeStatsAggPeriod: {{ kubelet_config_volume_stats_agg_period }}
+{% endif %}
+{% if kubelet_config_kubelet_cgroups is defined %}
+kubeletCgroups: {{ kubelet_config_kubelet_cgroups }}
+{% endif %}
+{% if kubelet_config_system_cgroups is defined %}
+systemCgroups: {{ kubelet_config_system_cgroups }}
+{% endif %}
+{% if kubelet_config_cgroup_root is defined %}
+cgroupRoot: {{ kubelet_config_cgroup_root }}
+{% endif %}
+{% if kubelet_config_cgroups_per_qos is defined %}
+cgroupsPerQOS: {{ kubelet_config_cgroups_per_qos }}
+{% endif %}
+{% if kubelet_config_cgroup_driver is defined %}
+cgroupDriver: {{ kubelet_config_cgroup_driver }}
+{% endif %}
+{% if kubelet_config_cpu_manager_policy is defined %}
+cpuManagerPolicy: {{ kubelet_config_cpu_manager_policy }}
+{% endif %}
+{% if kubelet_config_single_process_oom_kill is defined %}
+singleProcessOOMKill: {{ kubelet_config_single_process_oom_kill }}
+{% endif %}
+{% if kubelet_config_cpu_manager_policy_options is defined %}
+cpuManagerPolicyOptions: {{ kubelet_config_cpu_manager_policy_options | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_cpu_manager_reconcile_period is defined %}
+cpuManagerReconcilePeriod: {{ kubelet_config_cpu_manager_reconcile_period }}
+{% endif %}
+{% if kubelet_config_memory_manager_policy is defined %}
+memoryManagerPolicy: {{ kubelet_config_memory_manager_policy }}
+{% endif %}
+{% if kubelet_config_topology_manager_policy is defined %}
+topologyManagerPolicy: {{ kubelet_config_topology_manager_policy }}
+{% endif %}
+{% if kubelet_config_topology_manager_scope is defined %}
+topologyManagerScope: {{ kubelet_config_topology_manager_scope }}
+{% endif %}
+{% if kubelet_config_topology_manager_policy_options is defined %}
+topologyManagerPolicyOptions: {{ kubelet_config_topology_manager_policy_options | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_qos_reserved is defined %}
+qosReserved: {{ kubelet_config_qos_reserved | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_runtime_request_timeout is defined %}
+runtimeRequestTimeout: {{ kubelet_config_runtime_request_timeout }}
+{% endif %}
+{% if kubelet_config_hairpin_mode is defined %}
+hairpinMode: {{ kubelet_config_hairpin_mode }}
+{% endif %}
+{% if kubelet_config_max_pods is defined %}
+maxPods: {{ kubelet_config_max_pods }}
+{% endif %}
+{% if kubelet_config_pod_cidr is defined %}
+podCIDR: {{ kubelet_config_pod_cidr }}
+{% endif %}
+{% if kubelet_config_pod_pids_limit is defined %}
+podPidsLimit: {{ kubelet_config_pod_pids_limit }}
+{% endif %}
+{% if kubelet_config_resolv_conf is defined %}
+resolvConf: {{ kubelet_config_resolv_conf }}
+{% endif %}
+{% if kubelet_config_run_once is defined %}
+runOnce: {{ kubelet_config_run_once }}
+{% endif %}
+{% if kubelet_config_cpu_cfs_quota is defined %}
+cpuCFSQuota: {{ kubelet_config_cpu_cfs_quota }}
+{% endif %}
+{% if kubelet_config_cpu_cfs_quota_period is defined %}
+cpuCFSQuotaPeriod: {{ kubelet_config_cpu_cfs_quota_period }}
+{% endif %}
+{% if kubelet_config_node_status_max_images is defined %}
+nodeStatusMaxImages: {{ kubelet_config_node_status_max_images }}
+{% endif %}
+{% if kubelet_config_max_open_files is defined %}
+maxOpenFiles: {{ kubelet_config_max_open_files }}
+{% endif %}
+{% if kubelet_config_content_type is defined %}
+contentType: {{ kubelet_config_content_type }}
+{% endif %}
+{% if kubelet_config_kube_api_qps is defined %}
+kubeAPIQPS: {{ kubelet_config_kube_api_qps }}
+{% endif %}
+{% if kubelet_config_kube_api_burst is defined %}
+kubeAPIBurst: {{ kubelet_config_kube_api_burst }}
+{% endif %}
+{% if kubelet_config_serialize_image_pulls is defined %}
+serializeImagePulls: {{ kubelet_config_serialize_image_pulls }}
+{% endif %}
+{% if kubelet_config_max_parallel_image_pulls is defined %}
+maxParallelImagePulls: {{ kubelet_config_max_parallel_image_pulls }}
+{% endif %}
+{% if kubelet_config_eviction_hard is defined %}
+evictionHard: {{ kubelet_config_eviction_hard | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_eviction_soft is defined %}
+evictionSoft: {{ kubelet_config_eviction_soft | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_eviction_soft_grace_period is defined %}
+evictionSoftGracePeriod: {{ kubelet_config_eviction_soft_grace_period | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_eviction_pressure_transition_period is defined %}
+evictionPressureTransitionPeriod: {{ kubelet_config_eviction_pressure_transition_period }}
+{% endif %}
+{% if kubelet_config_eviction_max_pod_grace_period is defined %}
+evictionMaxPodGracePeriod: {{ kubelet_config_eviction_max_pod_grace_period }}
+{% endif %}
+{% if kubelet_config_eviction_minimum_reclaim is defined %}
+evictionMinimumReclaim: {{ kubelet_config_eviction_minimum_reclaim | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_pods_per_core is defined %}
+podsPerCore: {{ kubelet_config_pods_per_core }}
+{% endif %}
+{% if kubelet_config_enable_controller_attach_detach is defined %}
+enableControllerAttachDetach: {{ kubelet_config_enable_controller_attach_detach }}
+{% endif %}
+{% if kubelet_config_protect_kernel_defaults is defined %}
+protectKernelDefaults: {{ kubelet_config_protect_kernel_defaults }}
+{% endif %}
+{% if kubelet_config_make_ip_tables_util_chains is defined %}
+makeIPTablesUtilChains: {{ kubelet_config_make_ip_tables_util_chains }}
+{% endif %}
+{% if kubelet_config_iptables_masquerade_bit is defined %}
+iptablesMasqueradeBit: {{ kubelet_config_iptables_masquerade_bit }}
+{% endif %}
+{% if kubelet_config_iptables_drop_bit is defined %}
+iptablesDropBit: {{ kubelet_config_iptables_drop_bit }}
+{% endif %}
+{% if kubelet_config_feature_gates is defined %}
+featureGates: {{ kubelet_config_feature_gates | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_fail_swap_on is defined %}
+failSwapOn: {{ kubelet_config_fail_swap_on }}
+{% endif %}
+{% if kubelet_config_memory_swap is defined %}
+memorySwap: {{ kubelet_config_memory_swap | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_container_log_max_size is defined %}
+containerLogMaxSize: {{ kubelet_config_container_log_max_size }}
+{% endif %}
+{% if kubelet_config_container_log_max_files is defined %}
+containerLogMaxFiles: {{ kubelet_config_container_log_max_files }}
+{% endif %}
+{% if kubelet_config_container_log_max_workers is defined %}
+containerLogMaxWorkers: {{ kubelet_config_container_log_max_workers }}
+{% endif %}
+{% if kubelet_config_container_log_monitor_interval is defined %}
+containerLogMonitorInterval: {{ kubelet_config_container_log_monitor_interval }}
+{% endif %}
+{% if kubelet_config_config_map_and_secret_change_detection_strategy is defined %}
+configMapAndSecretChangeDetectionStrategy: {{ kubelet_config_config_map_and_secret_change_detection_strategy }}
+{% endif %}
+{% if kubelet_config_system_reserved is defined %}
+systemReserved: {{ kubelet_config_system_reserved | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_kube_reserved is defined %}
+kubeReserved: {{ kubelet_config_kube_reserved | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_reserved_system_cpus is defined %}
+reservedSystemCPUs: {{ kubelet_config_reserved_system_cpus }}
+{% endif %}
+{% if kubelet_config_show_hidden_metrics_for_version is defined %}
+showHiddenMetricsForVersion: {{ kubelet_config_show_hidden_metrics_for_version }}
+{% endif %}
+{% if kubelet_config_system_reserved_cgroup is defined %}
+systemReservedCgroup: {{ kubelet_config_system_reserved_cgroup }}
+{% endif %}
+{% if kubelet_config_kube_reserved_cgroup is defined %}
+kubeReservedCgroup: {{ kubelet_config_kube_reserved_cgroup }}
+{% endif %}
+{% if kubelet_config_enforce_node_allocatable is defined %}
+enforceNodeAllocatable: {{ kubelet_config_enforce_node_allocatable | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_allowed_unsafe_sysctls is defined %}
+allowedUnsafeSysctls: {{ kubelet_config_allowed_unsafe_sysctls | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_volume_plugin_dir is defined %}
+volumePluginDir: {{ kubelet_config_volume_plugin_dir }}
+{% endif %}
+{% if kubelet_config_provider_id is defined %}
+providerID: {{ kubelet_config_provider_id }}
+{% endif %}
+{% if kubelet_config_kernel_memcg_notification is defined %}
+kernelMemcgNotification: {{ kubelet_config_kernel_memcg_notification }}
+{% endif %}
+{% if kubelet_config_logging is defined %}
+logging: {{ kubelet_config_logging | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_enable_system_log_handler is defined %}
+enableSystemLogHandler: {{ kubelet_config_enable_system_log_handler }}
+{% endif %}
+{% if kubelet_config_enable_system_log_query is defined %}
+enableSystemLogQuery: {{ kubelet_config_enable_system_log_query }}
+{% endif %}
+{% if kubelet_config_shutdown_grace_period is defined %}
+shutdownGracePeriod: {{ kubelet_config_shutdown_grace_period }}
+{% endif %}
+{% if kubelet_config_shutdown_grace_period_critical_pods is defined %}
+shutdownGracePeriodCriticalPods: {{ kubelet_config_shutdown_grace_period_critical_pods }}
+{% endif %}
+{% if kubelet_config_shutdown_grace_period_by_pod_priority is defined %}
+shutdownGracePeriodByPodPriority: {{ kubelet_config_shutdown_grace_period_by_pod_priority | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_crash_loop_back_off is defined %}
+crashLoopBackOff: {{ kubelet_config_crash_loop_back_off | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_reserved_memory is defined %}
+reservedMemory: {{ kubelet_config_reserved_memory | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_enable_profiling_handler is defined %}
+enableProfilingHandler: {{ kubelet_config_enable_profiling_handler }}
+{% endif %}
+{% if kubelet_config_enable_debug_flags_handler is defined %}
+enableDebugFlagsHandler: {{ kubelet_config_enable_debug_flags_handler }}
+{% endif %}
+{% if kubelet_config_seccomp_default is defined %}
+seccompDefault: {{ kubelet_config_seccomp_default }}
+{% endif %}
+{% if kubelet_config_memory_throttling_factor is defined %}
+memoryThrottlingFactor: {{ kubelet_config_memory_throttling_factor }}
+{% endif %}
+{% if kubelet_config_register_with_taints is defined %}
+registerWithTaints: {{ kubelet_config_register_with_taints | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_register_node is defined %}
+registerNode: {{ kubelet_config_register_node }}
+{% endif %}
+{% if kubelet_config_tracing is defined %}
+tracing: {{ kubelet_config_tracing | to_yaml | indent(2) }}
+{% endif %}
+{% if kubelet_config_local_storage_capacity_isolation is defined %}
+localStorageCapacityIsolation: {{ kubelet_config_local_storage_capacity_isolation }}
+{% endif %}
+{% if kubelet_config_container_runtime_endpoint is defined %}
+containerRuntimeEndpoint: {{ kubelet_config_container_runtime_endpoint }}
+{% endif %}
+{% if kubelet_config_image_service_endpoint is defined %}
+imageServiceEndpoint: {{ kubelet_config_image_service_endpoint }}
+{% endif %}
+{% if kubelet_config_fail_cgroup_v1 is defined %}
+failCgroupV1: {{ kubelet_config_fail_cgroup_v1 }}
+{% endif %}
