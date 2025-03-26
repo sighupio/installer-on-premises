@@ -1,9 +1,9 @@
-# Example Playbooks for Kubernetes cluster deployment with Fury
+# Example Playbooks for Kubernetes cluster deployment with SIGHUP Distribution
 
-In this directory we provide example playbooks for deploying a Kubernetes cluster using Kubernetes Fury Distribution
+In this directory we provide example playbooks for deploying a Kubernetes cluster using SIGHUP Distribution
 to on-premises virtual machines at version 1.23.12 and then how to upgrade it to 1.24.7. The process is the same for the other supported Kuberntes versions.
 
-- [Example Playbooks for Kubernetes cluster deployment with Fury](#example-playbooks-for-kubernetes-cluster-deployment-with-fury)
+- [Example Playbooks for Kubernetes cluster deployment with SIGHUP Distribution](#example-playbooks-for-kubernetes-cluster-deployment-with-sighup-distribution)
   - [Requirements](#requirements)
   - [Cluster Architecture](#cluster-architecture)
   - [Install phases](#install-phases)

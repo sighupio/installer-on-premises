@@ -1,24 +1,28 @@
 <!-- markdownlint-disable MD033 -->
-<h1>
-    <img src="https://github.com/sighupio/fury-distribution/blob/main/docs/assets/fury-epta-white.png?raw=true" align="left" width="90" style="margin-right: 15px" alt="fury logo, an F in an hexagon"/>
-    Kubernetes Fury on-premises
+<h1 align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sighupio/distribution/refs/heads/main/docs/assets/white-logo.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/sighupio/distribution/refs/heads/main/docs/assets/black-logo.png">
+  <img alt="Shows a black logo in light color mode and a white one in dark color mode." src="https://raw.githubusercontent.com/sighupio/distribution/refs/heads/main/docs/assets/white-logo.png">
+</picture><br/>
+  Installer On-Premises
 </h1>
 <!-- markdownlint-enable MD033 -->
 
 ![Release](https://img.shields.io/badge/Latest%20Release-v1.32.3-blue)
-![License](https://img.shields.io/github/license/sighupio/fury-kubernetes-on-premises?label=License)
+![License](https://img.shields.io/github/license/sighupio/installer-on-premises?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
-<!-- <KFD-DOCS> -->
+<!-- <SD-DOCS> -->
 
-**Kubernetes Fury on-premises** is an installer and add-on module for the [Kubernetes Fury Distribution (KFD)][kfd-repo] that provides
+**Installer On-Premises** is an installer and add-on module for the [SIGHUP Distribution (SD)][sd-repo] that provides
 packages to install Kubernetes to a set of existing VMs.
 
-If you are new to KFD please refer to the [official documentation][kfd-docs] on how to get started with KFD.
+If you are new to SD please refer to the [official documentation][sd-docs] on how to get started with SD.
 
 ## Overview
 
-**Kubernetes Fury on-premises** uses a collection of open source tools to install Kubernetes in a set of existing VM (usually, an on-premises environment).
+**Installer On-Premises** uses a collection of open source tools to install Kubernetes in a set of existing VM (usually, an on-premises environment).
 
 ## Packages
 
@@ -50,7 +54,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 
 | Tool                    | Version    | Description                                                                                                                                                |
 | ----------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [furyctl][furyctl-repo] | `>=0.32.0` | The recommended tool to download and manage KFD modules and their packages. To learn more about `furyctl` read the [official documentation][furyctl-repo]. |
+| [furyctl][furyctl-repo] | `>=0.32.0` | The recommended tool to download and manage SD modules and their packages. To learn more about `furyctl` read the [official documentation][furyctl-repo]. |
 
 ### Legacy provisioning
 
@@ -77,17 +81,17 @@ roles:
 
 [furyctl-repo]: https://github.com/sighupio/furyctl
 [compatibility-matrix]: https://github.com/sighupio/fury-kubernetes-on-premises/blob/master/docs/COMPATIBILITY_MATRIX.md
-[kfd-repo]: https://github.com/sighupio/fury-distribution
-[kfd-docs]: https://docs.kubernetesfury.com/docs/distribution/
+[sd-repo]: https://github.com/sighupio/fury-distribution
+[sd-docs]: https://docs.kubernetesfury.com/docs/distribution/
 [getting-started]: https://docs.kubernetesfury.com/docs/getting-started/fury-on-vms
 
-<!-- </KFD-DOCS> -->
+<!-- </SD-DOCS> -->
 
 <!-- <FOOTER> -->
 
 ### Reporting Issues
 
-In case you experience any problems with the module, please [open a new issue](https://github.com/sighupio/fury-kubernetes-on-premises/issues/new/choose).
+In case you experience any problems with the module, please [open a new issue](https://github.com/sighupio/installer-on-premises/issues/new/choose).
 
 ## License
 
