@@ -5,7 +5,7 @@
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/sighupio/distribution/refs/heads/main/docs/assets/black-logo.png">
   <img alt="Shows a black logo in light color mode and a white one in dark color mode." src="https://raw.githubusercontent.com/sighupio/distribution/refs/heads/main/docs/assets/white-logo.png">
 </picture><br/>
-  Installer On-Premises
+  On-Premises Installer
 </h1>
 <!-- markdownlint-enable MD033 -->
 
@@ -15,14 +15,14 @@
 
 <!-- <SD-DOCS> -->
 
-**Installer On-Premises** is an installer and add-on module for the [SIGHUP Distribution (SD)][sd-repo] that provides
+**On-Premises Installer** is an installer and add-on module for the [SIGHUP Distribution (SD)][sd-repo] that provides
 packages to install Kubernetes to a set of existing VMs.
 
 If you are new to SD please refer to the [official documentation][sd-docs] on how to get started with SD.
 
 ## Overview
 
-**Installer On-Premises** uses a collection of open source tools to install Kubernetes in a set of existing VM (usually, an on-premises environment).
+**On-Premises Installer** uses a collection of open source tools to install Kubernetes in a set of existing VM (usually, an on-premises environment).
 
 ## Packages
 
