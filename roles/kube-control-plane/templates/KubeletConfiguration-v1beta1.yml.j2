@@ -1,7 +1,5 @@
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
-metadata:
-  name: kubelet-config
 
 {% if kubelet_config_enable_server is defined %}
 enableServer: {{ kubelet_config_enable_server }}
