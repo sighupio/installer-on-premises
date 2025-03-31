@@ -26,3 +26,4 @@
   notify:
     - Apply kubelet-config patches
     - Restart kubelet
+    - Kubelet verifications

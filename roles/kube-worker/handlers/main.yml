@@ -11,3 +11,7 @@
     state: restarted
     daemon_reload: true
   listen: Restart kubelet
+
+- name: Kubelet verifications
+  ansible.builtin.include_tasks: kubelet_checks.yml
+  listen: Kubelet verifications
