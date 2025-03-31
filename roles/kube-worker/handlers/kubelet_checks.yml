@@ -1,0 +1,23 @@
+---
+# The ansible.builtin.systemd state parameter value doesn't check if the service is active
+# so if the kubelet service is in activating state the task will succede. But if there is an
+# error in the kubelet config.yaml file, the kubelet will remain in activating state and not working even
+# the node seems to be ready.
+- name: Check if kubelet is active
+  ansible.builtin.command: "systemctl is-active kubelet"
+  retries: 3
+  delay: 5
+  changed_when: kubelet_active_status.rc != 0
+  register: kubelet_active_status
+  ignore_errors: true
+
+- name: Get kubelet logs
+  ansible.builtin.command: "journalctl -u kubelet --lines 15 --no-pager"
+  register: kubelet_logs
+  changed_when: kubelet_logs.rc != 0
+  when: kubelet_active_status.rc != 0
+
+- name: Print kubelet logs
+  ansible.builtin.fail:
+    msg: "The kubelet service has not become active in 15 seconds, here are the last 15 lines of logs: \n{{ kubelet_logs.stdout }}"
+  when: kubelet_active_status.rc != 0

@@ -35,4 +35,5 @@
   notify:
     - Apply kubelet-config patches
     - Restart kubelet
+    - Kubelet verifications
   when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')
