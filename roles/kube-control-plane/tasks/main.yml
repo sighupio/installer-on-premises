@@ -20,6 +20,7 @@
   template:
     src: kubeadm.yml.j2
     dest: "{{ kubeadm_config_file }}"
+  register: kubeadm_template
 
 - name: Ensuring kubeconfig variable
   copy:
@@ -72,13 +73,6 @@
     path: "{{ kubeadm_config_path }}"
     state: directory
     mode: "0755"
-
-- name: Generate ClusterConfiguration file from template
-  ansible.builtin.template:
-    src: ClusterConfiguration-v1beta4.yml.j2
-    dest: "{{ kubeadm_config_path }}/ClusterConfiguration-patch.yaml"
-    mode: '0644'
-  register: kubeadm_template
 
 - name: Reconfigure kube-* components
   ansible.builtin.include_tasks: reconfigure-kube-star-components.yml

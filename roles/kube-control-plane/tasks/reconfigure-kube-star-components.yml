@@ -4,6 +4,12 @@
     state: directory
     mode: "0755"
 
+- name: Ensure kubernetes pki backup directory exists
+  file:
+    path: "{{ kubeadm_config_path }}/backups/etc-kubernetes-pki/"
+    state: directory
+    mode: '0755'
+
 - name: Set timestamp
   ansible.builtin.set_fact:
     timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
@@ -15,71 +21,68 @@
     > {{ kubeadm_config_path }}/backups/kubeadm-config-backup-{{ timestamp }}.yaml
   changed_when: false
 
-- name: Dump kubeadm-config data
-  ansible.builtin.shell: >
-    kubectl -n kube-system get cm kubeadm-config
-    -o jsonpath='{.data.ClusterConfiguration}'
-    --kubeconfig /etc/kubernetes/admin.conf
-    > {{ kubeadm_config_path }}/kubeadm-config-ClusterConfiguration-dump.yaml
-  changed_when: false
+- name: Load current kubeadm-config configmap
+  ansible.builtin.slurp:
+    src: "{{ kubeadm_config_path }}/backups/kubeadm-config-backup-{{ timestamp }}.yaml"
+  register: backup_file_content
 
-- name: Add metadata field on kubeadm-config dump file
-  ansible.builtin.lineinfile:
-    path: "{{ kubeadm_config_path }}/kubeadm-config-ClusterConfiguration-dump.yaml"
-    line: "metadata:"
-    insertbefore: BOF
-    state: present
-    firstmatch: true
-    regexp: "^metadata:$"
+- name: Parse current kubeadm-config configmap
+  ansible.builtin.set_fact:
+    backup_content: "{{ backup_file_content.content | b64decode | from_yaml }}"
 
-- name: Add metadata.name field on kubeadm-config dump file
-  ansible.builtin.lineinfile:
-    path: "{{ kubeadm_config_path }}/kubeadm-config-ClusterConfiguration-dump.yaml"
-    line: "  name: kubeadm-config"
-    insertafter: "^metadata:$"
-    state: present
-    firstmatch: true
-    regexp: "^  name: kubeadm-config$"
+- name: Extract current kubeadm-config certSANs
+  ansible.builtin.set_fact:
+    current_certsans: "{{ (backup_content.data.ClusterConfiguration | from_yaml).apiServer.certSANs | default([]) }}"
 
-- name: Copy openapi spec file
+- name: Load ClusterConfiguration template file content
+  ansible.builtin.slurp:
+    src: "{{ kubeadm_config_file }}"
+  register: template_file_content
+
+- name: Parse ClusterConfiguration template file
+  ansible.builtin.set_fact:
+    template_content: "{{ template_file_content.content | b64decode | from_yaml_all | list }}"
+
+- name: Extract ClusterConfiguration template certSANs
+  ansible.builtin.set_fact:
+    template_certsans: "{{ template_content[1].apiServer.certSANs | default([]) }}"
+
+- name: Compare certSANs
+  ansible.builtin.set_fact:
+    certsans_changed: "{{ current_certsans | difference(template_certsans) | length > 0 or template_certsans | difference(current_certsans) | length > 0 }}"
+
+- name: Show if certSANs change
+  ansible.builtin.debug:
+    msg: "certSANs changed: {{ certsans_changed }}"
+
+- name: Backup kubernetes pki directory
   ansible.builtin.copy:
-    src: cc-openapi-spec.json
-    dest: "{{ kubeadm_config_path }}/cc-openapi-spec.json"
-    mode: '0644'
+    src: /etc/kubernetes/pki
+    dest: "{{ kubeadm_config_path }}/backups/etc-kubernetes-pki/etc-kubernetes-pki-{{ timestamp }}"
+    remote_src: yes
+    mode: preserve
+    directory_mode: '0755'
+  when: certsans_changed
 
-- name: Copy kustomization file
-  ansible.builtin.copy:
-    src: kustomization.yaml
-    dest: "{{ kubeadm_config_path }}/kustomization.yaml"
-    mode: '0644'
-  changed_when: false
-
-- name: Generate kubeadm-config new configuration
+- name: Remove current apiserver crt and key for later renew
   ansible.builtin.shell: |
-    kubectl kustomize {{ kubeadm_config_path }}/ > {{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml
+    mv /etc/kubernetes/pki/apiserver.crt ~
+    mv /etc/kubernetes/pki/apiserver.key ~
   changed_when: false
+  when: certsans_changed
 
-- name: Remove metadata field from kubeadm-config patched file
-  ansible.builtin.lineinfile:
-    path: "{{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml"
-    regexp: "^metadata:$"
-    state: absent
-
-- name: Remove metadata.name field from kubeadm-config patched file
-  ansible.builtin.lineinfile:
-    path: "{{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml"
-    regexp: "^  name: kubeadm-config$"
-    state: absent
+# When changing the certSANs in the apiserver we have to write new certificates.
+- name: Renew apiserver crt and key with certSANs
+  ansible.builtin.shell: |
+    kubeadm init phase certs apiserver --config {{ kubeadm_config_file }}
+  changed_when: false
+  when: certsans_changed
 
 # When changing the configuration we also have to keep the ClusterConfiguration
 # ConfigMap aligned with these changes.
 - name: Apply new kubeadm-config configmap
-  ansible.builtin.shell: >
-    kubectl apply -f <(kubectl create configmap kubeadm-config -n kube-system
-    --from-file=ClusterConfiguration={{ kubeadm_config_path }}/ClusterConfiguration-patched.yaml
-    --dry-run=client -o yaml) --kubeconfig /etc/kubernetes/admin.conf
-  args:
-    executable: /bin/bash
+  ansible.builtin.shell: |
+    kubeadm init phase upload-config kubeadm --config {{ kubeadm_config_file }}
   changed_when: false
 
 # By passing only the ClusterConfiguration object, the InitConfiguration patches are lost.
