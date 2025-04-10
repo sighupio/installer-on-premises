@@ -13,7 +13,7 @@
   when: kubernetes_version is version('1.29.0', 'ge', version_type='semver')
 
 - name: Upgrade kubernetes master with kubeadm (legacy)
-  ansible.builtin.command: kubeadm upgrade apply --config /etc/kubernetes/kubeadm.yml -y
+  ansible.builtin.command: "kubeadm upgrade apply --config {{ kubeadm_config_file }} -y --patches {{ kubeadm_patches_path }}"
   when: kubernetes_version is version('1.30.0', 'lt', version_type='semver')
 
 - name: Ensuring kubeadm-upgrade-config.yml config file is present on machine
