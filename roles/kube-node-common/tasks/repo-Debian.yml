@@ -67,6 +67,7 @@
         state: present
 
     - name: Add disclaimer in repository file
+      when: ansible_version.major >= 2 and ansible_version.minor >= 16
       ansible.builtin.blockinfile:
         append_newline: true
         block: "# This file is managed by the On Premises installer of the Kubernetes Fury Distribution.\n# Do not manually edit this file. Content will be replaced each time you run the installer."
@@ -75,7 +76,7 @@
         marker_begin: "- DISCLAIMER START"
         marker_end: "- DISCLAIMER END"
         path: "{{ apt_sources_dir }}/{{ filename }}.list"
-      
+
     - name: Update APT cache
       apt:
         update_cache: true
