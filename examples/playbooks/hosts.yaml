@@ -107,7 +107,8 @@ all:
     # kubernetes_version: "1.29.10"
     # kubernetes_version: "1.30.6"
     # kubernetes_version: "1.31.4"
-    kubernetes_version: "1.32.3"
+    #kubernetes_version: "1.32.3"
+    kubernetes_version: "1.32.4"
     # Switch to false the following field when etcd running on dedicated nodes
     etcd_on_control_plane: true
     admin_kubeconfig_filename: admin.conf
