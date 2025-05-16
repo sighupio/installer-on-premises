@@ -19,7 +19,7 @@ kubernetes_cloud_config: ""
 # Accepts a list of strings, in which each string can be either an IP Address or a domain
 kubernetes_apiserver_certSANs: []
 kubernetes_control_plane_address: "{{ ansible_hostname }}"
-kubernetes_version: "1.32.3"
+kubernetes_version: "1.32.4"
 kubernetes_image_registry: "{{ dependencies[kubernetes_version].kubernetes_image_registry }}"
 coredns_image_prefix: "{{ dependencies[kubernetes_version].coredns_image_prefix | default('/coredns') }}"
 kubernetes_hostname: "{{ ansible_fqdn }}"
@@ -67,4 +67,6 @@ dependencies:
   "1.31.7":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.32.3":
+    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
+  "1.32.4":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"

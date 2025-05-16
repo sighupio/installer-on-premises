@@ -12,7 +12,7 @@ runc_download_url: "https://github.com/opencontainers/runc/releases/download/{{ 
 runc_checksum: "sha256:https://github.com/opencontainers/runc/releases/download/{{ versions[kubernetes_version].runc_version }}/runc.sha256sum"
 
 # Customize versions based on Kubernetes version to maintain compatibility
-kubernetes_version: "1.32.3"
+kubernetes_version: "1.32.4"
 # Resgistry where to pull the pause (sandbox) image. We use the same name used in other roles for simplicity.
 # Upstream registry is "k8s.gcr.io"
 kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
@@ -58,6 +58,10 @@ versions:
     runc_version: "v1.1.14" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.23/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10"
   1.32.3:
+    containerd_version: "1.7.26"
+    runc_version: "v1.2.5" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.26/script/setup/runc-version
+    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10"
+  1.32.4:
     containerd_version: "1.7.26"
     runc_version: "v1.2.5" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.26/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10"
