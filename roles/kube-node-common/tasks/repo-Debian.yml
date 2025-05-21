@@ -5,9 +5,11 @@
     repo: "{{ kubernetes_repo_deprecated['apt_repo'] }}"
     state: absent
 
-- name: Install apt-transport-https
+- name: Install apt-transport-https and gnupg
   apt:
-    name: apt-transport-https
+    pkg: 
+    - apt-transport-https
+    - gnupg
     state: latest
 
 - name: Add Kubernetes APT repository
