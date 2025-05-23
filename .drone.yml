@@ -43,7 +43,7 @@ steps:
       # Disable natural language checks
       VALIDATE_NATURAL_LANGUAGE: "false"
       # Shellcheck gets confused with Jinja2 tempalates. Skipping all of them
-      FILTER_REGEX_EXCLUDE: (roles/.*/templates/.*j2)
+      FILTER_REGEX_EXCLUDE: (roles/.*/templates/.*j2|\.github)
     depends_on:
       - clone
 
