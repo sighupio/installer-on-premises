@@ -1,4 +1,3 @@
-
 version = 2
 root = "{{ containerd_storage_dir }}"
 state = "{{ containerd_state_dir }}"
@@ -56,13 +55,11 @@ oom_score = {{ containerd_oom_score }}
       {% endfor -%}
     {% endif -%}
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-          endpoint = ["https://registry-1.docker.io"]
         {% if containerd_registry_configs -%}
-        {% for registry_config in containerd_registry_configs -%}
-        {% if registry_config.mirror_endpoint is defined -%}
+          {% for registry_config in containerd_registry_configs -%}
+            {% if registry_config.mirror_endpoint is defined -%}
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{registry_config.registry}}"]
           endpoint = {{ registry_config.mirror_endpoint }}
-        {% endif -%}
-        {% endfor -%}
+            {% endif -%}
+          {% endfor -%}
         {% endif -%}
