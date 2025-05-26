@@ -12,6 +12,11 @@ skip_kubelet_upgrade: False
 kubelet_pki_cert_file: /var/lib/kubelet/pki/kubelet.crt
 kubelet_pki_key_file: /var/lib/kubelet/pki/kubelet.key
 
+kernel_parameters: []
+sysctl_d_path: "/etc/sysctl.d"
+sysctl_dump_path: "{{ sysctl_d_path }}/sysctl-dump.original"
+sysctl_file_path: "{{ sysctl_d_path }}/99-sd-onprem-kernel-params.conf"
+
 dependencies:
   # To pin dependencies for each Kubernetes version
   "1.28.7":

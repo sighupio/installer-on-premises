@@ -43,6 +43,30 @@
     _conntrack_module_name: "nf_conntrack"
   when: ansible_facts['distribution'] == "Debian"
 
+- name: Set custom kernel parameters
+  block:
+  - name: Dump previous values
+    # Dump the current values before we change them, so the user can restore them if needed
+    # This is because sysctl does not provide a way to know what is the default value for
+    # a variable nor to reset it
+    ansible.builtin.shell:
+      cmd: "sysctl -a > {{ sysctl_dump_path }}"
+      creates: "{{ sysctl_dump_path }}"
+  - name: Delete old customizations
+    # This is to ensure that the file we create always contains the latest customizations
+    # This will be recreated in the next step
+    ansible.builtin.file:
+      path: "{{ sysctl_file_path }}"
+      state: absent
+  - name: Apply custom values
+    # Create a dedicated file to hold the customizations, to persist them across reboots
+    ansible.posix.sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      sysctl_set: true
+      sysctl_file: "{{ sysctl_file_path }}"
+    with_items: "{{ kernel_parameters }}"
+
 - include_tasks: "repo-Rocky-RedHat.yml"
   when: ansible_os_family in ['RedHat', 'Rocky']
 
