@@ -19,7 +19,14 @@ This release .... TBD
 
 ## New features 🌟
 
-- [[#135](https://github.com/sighupio/installer-on-premises/pull/135)]: Adds a new variable to the `kube-node-common` role that allows customization of kernel variables with `sysctl`.
+- [[#135](https://github.com/sighupio/installer-on-premises/pull/135)]: Adds a new variable to the `kube-node-common` role that allows customization of kernel variables with `sysctl`. Example variable:
+
+```yaml
+
+kernel_parameters:
+- name: "kernel.panic"
+  value: "15"
+```
 
 ## Bug fixes 🐞
 
