@@ -17,6 +17,10 @@ This release .... TBD
 | [kube-control-plane](roles/kube-control-plane) | `-`               | `No update`      |
 | [kube-worker](roles/kube-worker)               | `-`               | `No update`      |
 
+## New features 🌟
+
+- [[#135](https://github.com/sighupio/installer-on-premises/pull/135)]: Adds a new variable to the `kube-node-common` role that allows customization of kernel variables with `sysctl`.
+
 ## Bug fixes 🐞
 
 - [[#134](https://github.com/sighupio/installer-on-premises/pull/134)] Docker.io mirror: now configuring a mirror for docker.io does not result in an error anymore. Example, add the following vars to your Ansible `hosts.yaml` file:
