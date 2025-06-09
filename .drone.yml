@@ -77,7 +77,7 @@ steps:
           - refs/tags/**
 
   - name: prepare-release-notes
-    image: quay.io/sighup/fury-release-notes-plugin:3.7_2.8.4
+    image: quay.io/sighup/fury-release-notes-plugin:3.12_2.10.0
     pull: always
     depends_on: [clone]
     settings:
