@@ -5,16 +5,36 @@
 #       - git
 #       - curl
 #     state: present
+- name: Ensure group etcd exists
+  group:
+    name: etcd
+    state: present
+    system: true
 
-- name: Making sure directories are present
+- name: Ensure user etcd exists
+  user:
+    name: etcd
+    group: etcd
+    system: true
+    shell: /sbin/nologin
+    create_home: false
+
+- name: Making sure etcd config and certificates directories are present
   file:
     path: "{{item}}"
     state: directory
   with_items:
     - "{{ etcd_config_dir }}"
-    - "{{ etcd_data_dir }}"
     - "{{ etcd_certs_dir }}"
 
+- name: Ensure etcd data directory exists with proper ownership
+  file:
+    path: "{{ etcd_data_dir }}"
+    state: directory
+    owner: etcd
+    group: etcd
+    mode: '0700'
+    
 - name: Generating TLS certificates
   import_tasks: tls.yml
 
