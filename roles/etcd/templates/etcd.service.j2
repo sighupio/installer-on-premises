@@ -5,6 +5,8 @@ Conflicts=etcd-member.service
 Conflicts=etcd2.service
 
 [Service]
+User=etcd
+Group=etcd
 EnvironmentFile=/etc/etcd/etcd.env
 ExecStart=/usr/local/bin/etcd --listen-metrics-urls=http://{{ etcd_address }}:2378
 
