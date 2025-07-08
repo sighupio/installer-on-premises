@@ -80,3 +80,16 @@ dependencies:
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.33.4":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
+
+## Controller Manager
+terminated_pod_gc_threshold: 500
+
+## Admission plugins
+eventratelimits:
+  - server:
+    qps: 5000
+    burst: 20000
+  - namespace:
+    qps: 50
+    burst: 100
+    cacheSize: 2000

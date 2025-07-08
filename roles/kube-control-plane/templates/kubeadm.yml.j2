@@ -41,7 +41,12 @@ apiServer:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
-    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit"
+    admission-control-config-file: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
+    cloud-provider: {{ kubernetes_cloud_provider }}
+{% if kubernetes_cloud_config != "" %}
+    cloud-config: {{ kubernetes_cloud_config }}
+{% endif %}
     audit-log-maxage: "{{ audit_policy_max_age }}"
     audit-log-path: "{{ audit_log_dir }}/kube-apiserver-audit.log"
     audit-policy-file: {{ audit_policy_config_path }}
@@ -102,6 +107,11 @@ controllerManager:
 {% endif %}
 # Disable profiling (always false by default)
     profiling: "false"
+# Threshold number referring to the maximum number of terminated pod being
+# retained from the controller-manager before their removal (by default is 12500)
+ {% if terminated_pod_gc_threshold is defined %}
+    terminated-pod-gc-threshold: "{{ terminated_pod_gc_threshold }}"
+{% endif %}
 {% if kubernetes_cloud_config != "" %}
   extraVolumes:
   - name: cloud
