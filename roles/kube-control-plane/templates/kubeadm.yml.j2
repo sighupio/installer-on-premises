@@ -65,6 +65,7 @@ apiServer:
 {% if api_audiences is defined %}
     api-audiences: "{{ api_audiences }}"
 {% endif %}
+    profiling: "false"
   extraVolumes:
   - name: audit-files
     hostPath: {{ audit_log_dir }}
@@ -89,6 +90,7 @@ scheduler:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
+    profiling: "false"
 controllerManager:
   extraArgs:
 {% if tls_cipher_suites is defined %}
@@ -98,6 +100,8 @@ controllerManager:
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
+# Disable profiling (always false by default)
+    profiling: "false"
 {% if kubernetes_cloud_config != "" %}
   extraVolumes:
   - name: cloud
