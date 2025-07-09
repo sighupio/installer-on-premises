@@ -70,3 +70,6 @@ dependencies:
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.32.4":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
+
+## Controller Manager
+terminated_pod_gc_threshold: 500
