@@ -143,3 +143,11 @@
 
 - include_tasks: upgrade.yml
   when: upgrade
+
+- name: Create admission config file for EventRateLimit
+  template:
+    src: admission-config.yaml.j2
+    dest: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
+    owner: root
+    group: root
+    mode: 0644
