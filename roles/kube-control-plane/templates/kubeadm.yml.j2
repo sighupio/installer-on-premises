@@ -41,7 +41,7 @@ apiServer:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
-    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit"
+    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit,NodeRestriction"
     admission-control-config-file: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
     cloud-provider: {{ kubernetes_cloud_provider }}
 {% if kubernetes_cloud_config != "" %}
