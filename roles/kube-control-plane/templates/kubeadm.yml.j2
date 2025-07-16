@@ -77,6 +77,11 @@ apiServer:
     mountPath: {{ audit_policy_config_path }}
     readOnly: true
     pathType: File
+  - name: admission
+    hostPath: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}
+    mountPath: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}
+    readOnly: true
+    pathType: File
 {% if kubernetes_encryption_config != "" %}
   - name: encryption-configuration
     hostPath: {{ kubernetes_remote_encryption_config }}
@@ -110,7 +115,7 @@ controllerManager:
 # Disabilita il profiling (sempre false di default)
     profiling: "false"
 # Ridotto valore di default per numero massimo di pod teminati conservati dal controller-manager prima della rimozione (default 12500)
- {% if terminated_pod_gc_threshold is defined %}
+{% if terminated_pod_gc_threshold is defined %}
     terminated-pod-gc-threshold: "{{ terminated_pod_gc_threshold }}"
 {% endif %}
 {% if kubernetes_cloud_config != "" %}
