@@ -46,9 +46,9 @@ oidc_issuer_url: ""
 oidc_client_id: ""
 oidc_ca_file: /etc/ssl/certs/ca-certificates.crt
 oidc_username_claim: email
-oidc_username_prefix: "oidc:"
+oidc_username_prefix: ""
 oidc_groups_claim: groups
-oidc_groups_prefix: "oidc:"
+oidc_groups_prefix: ""
 
 upgrade: False
 
@@ -86,10 +86,10 @@ terminated_pod_gc_threshold: 500
 
 ## Admission plugins
 eventratelimits:
-  - server:
+  - type: Server
     qps: 5000
     burst: 20000
-  - namespace:
+  - type: Namespace
     qps: 50
     burst: 100
     cacheSize: 2000

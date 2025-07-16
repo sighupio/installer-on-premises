@@ -82,6 +82,11 @@ apiServer:
     mountPath: {{ audit_policy_config_path }}
     readOnly: true
     pathType: File
+  - name: admission
+    hostPath: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}
+    mountPath: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}
+    readOnly: true
+    pathType: File
 {% if kubernetes_encryption_config != "" %}
   - name: encryption-configuration
     hostPath: {{ kubernetes_remote_encryption_config }}
