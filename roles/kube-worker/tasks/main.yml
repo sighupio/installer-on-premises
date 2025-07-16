@@ -29,6 +29,14 @@
   ansible.builtin.include_tasks: reconfigure-kubelet.yml
   when: kubelet_config_file.stat.exists
 
+- name: Ensure kubelet config.yaml has restricted permissions
+  ansible.builtin.file:
+    path: /var/lib/kubelet/config.yaml
+    owner: root
+    group: root
+    mode: '0600'
+  when: kubelet_config_file.stat.exists
+
 - name: Ensure that the kubelet service config file exists and has correct permissions
   ansible.builtin.file:
     path: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
