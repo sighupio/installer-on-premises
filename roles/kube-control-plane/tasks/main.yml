@@ -11,7 +11,7 @@
     owner: root
     group: root
     mode: 0644
-    
+
 - name: Ensuring audit folder is present on machine
   file:
     name: "{{ audit_log_dir }}"
@@ -157,4 +157,9 @@
 - include_tasks: upgrade.yml
   when: upgrade
 
-
+- name: Ensure that the kubelet service config file exists and has correct permissions
+  ansible.builtin.file:
+    path: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    owner: root
+    group: root
+    mode: '0600'
