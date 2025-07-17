@@ -93,3 +93,6 @@ eventratelimits:
     qps: 50
     burst: 100
     cacheSize: 2000
+
+## Kubelet
+kubelet_streaming_connection_idle_timeout: "5m"

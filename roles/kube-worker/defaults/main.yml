@@ -10,3 +10,4 @@ kubernetes_cloud_provider: ""
 kubernetes_hostname: "{{ ansible_fqdn }}"
 kubernetes_role: "worker"
 kubernetes_taints: []
+kubelet_streaming_connection_idle_timeout: "5m"
