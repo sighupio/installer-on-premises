@@ -358,6 +358,4 @@ imageServiceEndpoint: {{ kubelet_config_image_service_endpoint }}
 {% if kubelet_config_fail_cgroup_v1 is defined %}
 failCgroupV1: {{ kubelet_config_fail_cgroup_v1 }}
 {% endif %}
-{% if kubelet_streaming_connection_idle_timeout is defined %}
-streamingConnectionIdleTimeout: "{{ kubelet_streaming_connection_idle_timeout }}"
-{% endif %}
+
