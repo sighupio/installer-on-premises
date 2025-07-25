@@ -219,13 +219,13 @@
           state: absent
           regexp: '^$'
 
-    - name: Delete the Kubelet server cert before regenarating them
-      file:
-        path: "{{ item }}"
-        state: absent
-      with_items:
-        - /var/lib/kubelet/pki/kubelet.crt
-        - /var/lib/kubelet/pki/kubelet.key
+    # - name: Delete the Kubelet server cert before regenarating them
+    #   file:
+    #     path: "{{ item }}"
+    #     state: absent
+    #   with_items:
+    #     - /var/lib/kubelet/pki/kubelet.crt
+    #     - /var/lib/kubelet/pki/kubelet.key
 
     - name: Restart Kubelet and regenerate the server certificate
       shell: |
