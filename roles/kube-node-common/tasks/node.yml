@@ -210,14 +210,14 @@
 
 # Start remove kubelet server certificate,key for later renew when restart kubelet service
 
-- name: Remove kubelet crt and key for later renew
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ kubelet_pki_cert_file }}"
-    - "{{ kubelet_pki_key_file }}"
-  when: not skip_kubelet_upgrade
+# - name: Remove kubelet crt and key for later renew
+#   file:
+#     path: "{{ item }}"
+#     state: absent
+#   with_items:
+#     - "{{ kubelet_pki_cert_file }}"
+#     - "{{ kubelet_pki_key_file }}"
+#   when: not skip_kubelet_upgrade
 
 # Finish remove kubelet server certificate,key for later renew when restart kubelet service
 

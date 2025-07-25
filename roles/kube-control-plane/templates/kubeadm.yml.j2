@@ -41,10 +41,11 @@ apiServer:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
-    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit,NodeRestriction"
+    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit,NodeRestriction,DenyServiceExternalIPs"
     admission-control-config-file: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
     cloud-provider: {{ kubernetes_cloud_provider }}
     kubelet-certificate-authority: {{ kubelet_certificate_authority_file | default ('/etc/kubernetes/pki/ca.crt') }}
+    request-timeout: "300s"
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
@@ -147,6 +148,6 @@ apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 cgroupDriver: systemd
 protectKernelDefaults: true
-{% if tls_cipher_suites is defined %}
-tlsCipherSuites: {{ tls_cipher_suites | to_yaml | indent(2) }}
+{% if kubelet_tls_cipher_suites is defined %}
+tlsCipherSuites: {{ kubelet_tls_cipher_suites | to_yaml | indent(2) }}
 {% endif %}

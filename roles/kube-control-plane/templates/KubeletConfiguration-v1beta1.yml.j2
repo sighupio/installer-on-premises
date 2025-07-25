@@ -40,8 +40,8 @@ tlsCertFile: {{ kubelet_config_tls_cert_file }}
 {% if kubelet_config_tls_private_key_file is defined %}
 tlsPrivateKeyFile: {{ kubelet_config_tls_private_key_file }}
 {% endif %}
-{% if tls_cipher_suites is defined %}
-tlsCipherSuites: {{ tls_cipher_suites | to_yaml | indent(2) }}
+{% if kubelet_tls_cipher_suites is defined %}
+tlsCipherSuites: {{ kubelet_tls_cipher_suites | to_yaml | indent(2) }}
 {% endif %}
 {% if kubelet_config_tls_min_version is defined %}
 tlsMinVersion: {{ kubelet_config_tls_min_version }}
