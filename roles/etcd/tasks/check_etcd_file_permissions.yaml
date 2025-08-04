@@ -1,0 +1,35 @@
+- name: Check correct ownership of etcd certs and data
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: etcd
+    group: etcd
+    recurse: true
+  loop:
+    - "{{ etcd_data_dir }}"
+    - /etc/etcd/pki/etcd
+
+- name: Check intermediate etcd directory ownerships (non-recursive)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: etcd
+    recurse: false
+    mode: '0750'
+  loop:
+    - "{{ etcd_config_dir }}"
+    - "{{ etcd_certs_dir }}"
+
+- name: Deploy correct systemd unit file for etcd user
+  ansible.builtin.template:
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+    owner: etcd
+    group: etcd
+    mode: '0644'
+  notify: Reload etcd
+
+- name: Start etcd as 'etcd' user
+  ansible.builtin.systemd:
+    name: etcd
+    daemon_reload: true
+    state: started

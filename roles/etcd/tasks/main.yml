@@ -19,22 +19,43 @@
     shell: /sbin/nologin
     create_home: false
 
-- name: Making sure etcd config and certificates directories are present
-  file:
-    path: "{{item}}"
-    state: directory
-  with_items:
-    - "{{ etcd_config_dir }}"
-    - "{{ etcd_certs_dir }}"
+- name: Check if etcd systemd unit runs as root
+  command: systemctl cat etcd
+  register: etcd_unit_cat
+  changed_when: false
+  ignore_errors: true  # nel caso etcd non esista ancora
 
-- name: Ensure etcd data directory exists with proper ownership
-  file:
-    path: "{{ etcd_data_dir }}"
-    state: directory
-    owner: etcd
-    group: etcd
-    mode: '0700'
-    
+- name: Set etcd_runs_as_root fact
+  set_fact:
+    etcd_runs_as_root: "{{ etcd_unit_cat.stdout is search('^User=root$') }}"
+  when: etcd_unit_cat is defined and etcd_unit_cat.stdout is defined
+
+
+- name: Set correct etcd file permissions when etcd already runs as 'etcd' or is not running
+  ansible.builtin.include_tasks: check_etcd_file_permissions.yaml
+  when: not etcd_runs_as_root | default(false)
+
+- name: Set correct etcd file permissions and fix service if etcd runs as root
+  block:
+    - name: Include permission fix logic
+      ansible.builtin.include_tasks: check_etcd_file_permissions.yaml
+
+    - name: Deploy correct systemd unit file for etcd user
+      ansible.builtin.template:
+        src: etcd.service.j2
+        dest: /etc/systemd/system/etcd.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload etcd
+
+    - name: Start etcd as 'etcd' user
+      ansible.builtin.systemd:
+        name: etcd
+        daemon_reload: true
+        state: started
+  when: etcd_runs_as_root | default(false)
+
 - name: Generating TLS certificates
   import_tasks: tls.yml
 
