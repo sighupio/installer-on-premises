@@ -12,7 +12,7 @@ kubernetes_role: "worker"
 kubernetes_taints: []
 kubelet_config_streaming_connection_idle_timeout: "5m"
 kubelet_config_read_only_port: 0
-kubelet_config_protect_kernel_defaults: true
+
 kubelet_config_server_tls_bootstrap: true
 
 # kubelet_config_tls_cert_file: /var/lib/kubelet/pki/kubelet.crt
