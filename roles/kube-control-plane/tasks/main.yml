@@ -183,10 +183,10 @@
     - /etc/kubernetes/pki/apiserver-kubelet-client.crt
     - /etc/kubernetes/pki/front-proxy-client.crt
 
-- name: Copy csr-approver script
-  ansible.builtin.copy:
-    src: ../files/csr-approver.sh
-    dest: /usr/local/bin/csr-approver.sh
-    owner: root
-    group: root
-    mode: '0644'
+# - name: Copy csr-approver script
+#   ansible.builtin.copy:
+#     src: ../files/csr-approver.sh
+#     dest: /usr/local/bin/csr-approver.sh
+#     owner: root
+#     group: root
+#     mode: '0644'
