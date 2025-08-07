@@ -147,7 +147,6 @@ mode: ipvs
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 cgroupDriver: systemd
-protectKernelDefaults: true
 {% if kubelet_tls_cipher_suites is defined %}
 tlsCipherSuites: {{ kubelet_tls_cipher_suites | to_yaml | indent(2) }}
 {% endif %}
