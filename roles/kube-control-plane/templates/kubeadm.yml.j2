@@ -112,11 +112,10 @@ controllerManager:
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
-# Disable profiling (always false by default)
+# Disables profiling (always false by default)
     profiling: "false"
-# Threshold number referring to the maximum number of terminated pod being
-# retained from the controller-manager before their removal (by default is 12500)
- {% if terminated_pod_gc_threshold is defined %}
+# Reduced default value for maximum number of terminated pods kept by the controller-manager before removal (default 12500)
+{% if terminated_pod_gc_threshold is defined %}
     terminated-pod-gc-threshold: "{{ terminated_pod_gc_threshold }}"
 {% endif %}
 {% if kubernetes_cloud_config != "" %}

@@ -23,7 +23,7 @@
   command: systemctl cat etcd
   register: etcd_unit_cat
   changed_when: false
-  ignore_errors: true  # nel caso etcd non esista ancora
+  ignore_errors: true  # in case etcd does not exist yet
 
 - name: Set etcd_runs_as_root fact
   set_fact:
