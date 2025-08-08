@@ -83,7 +83,7 @@ eventratelimits:
     qps: 20
     burst: 100
     cacheSize: 4096
-  - type: Users
+  - type: User
     qps: 20
     burst: 100
     cacheSize: 4096

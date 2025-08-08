@@ -114,9 +114,9 @@ controllerManager:
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
-# Disabilita il profiling (sempre false di default)
+# Disables profiling (always false by default)
     profiling: "false"
-# Ridotto valore di default per numero massimo di pod teminati conservati dal controller-manager prima della rimozione (default 12500)
+# Reduced default value for maximum number of terminated pods kept by the controller-manager before removal (default 12500)
 {% if terminated_pod_gc_threshold is defined %}
     terminated-pod-gc-threshold: "{{ terminated_pod_gc_threshold }}"
 {% endif %}
