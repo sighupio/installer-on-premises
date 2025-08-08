@@ -64,3 +64,8 @@ spec:
               runAsNonRoot: true
               readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
+          tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/control-plane
