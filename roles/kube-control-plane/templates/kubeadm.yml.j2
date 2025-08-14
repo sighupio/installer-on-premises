@@ -4,6 +4,10 @@ nodeRegistration:
   name: {{ kubernetes_hostname }}
   kubeletExtraArgs:
     cloud-provider: {{ kubernetes_cloud_provider }}
+{% if kubernetes_taints is defined %}
+  taints:
+{{ kubernetes_taints | to_yaml | indent(4, true) }}
+{%- endif -%}
 localAPIEndpoint:
   advertiseAddress: {{ kubernetes_apiserver_advertise_address }}
   bindPort: 6443
