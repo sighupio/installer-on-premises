@@ -3,6 +3,7 @@ kubeadm_config_file: /etc/kubernetes/kubeadm.yml
 kubeadm_upgrade_config_file: /etc/kubernetes/kubeadm-upgrade-config.yml
 kubeadm_patches_path: /etc/kubernetes/patches/
 kubeadm_config_path: /etc/kubernetes/kubeadm-config
+kubeadm_skip_phases: []
 kubelet_config_path: /var/lib/kubelet/kubelet-config
 audit_log_dir: /var/log/kubernetes
 audit_policy_max_age: 3

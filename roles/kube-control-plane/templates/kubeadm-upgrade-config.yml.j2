@@ -5,3 +5,4 @@ apply:
     forceUpgrade: true
     patches:
       directory: {{ kubeadm_patches_path }}
+    skipPhases: {{ kubeadm_skip_phases | to_yaml | indent(2) }}
