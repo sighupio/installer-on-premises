@@ -131,6 +131,7 @@ ipvs:
   minSyncPeriod: 0s
   scheduler: ""
   syncPeriod: 30s
+  strictARP: "{{ kubernetes_strict_arp }}"
 metricsBindAddress: 0.0.0.0:10249
 mode: ipvs
 ---
