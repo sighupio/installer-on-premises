@@ -179,8 +179,10 @@
     group: root
     mode: '0600'
   with_items:
+    - /etc/kubernetes/pki/ca.crt
     - /etc/kubernetes/pki/apiserver.crt
     - /etc/kubernetes/pki/apiserver-kubelet-client.crt
+    - /etc/kubernetes/pki/front-proxy-ca.crt
     - /etc/kubernetes/pki/front-proxy-client.crt
 
 - name: Ensuring kubelet-csr-approver.yaml file is present
