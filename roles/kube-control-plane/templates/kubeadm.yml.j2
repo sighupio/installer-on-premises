@@ -45,7 +45,7 @@ apiServer:
     admission-control-config-file: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
     cloud-provider: {{ kubernetes_cloud_provider }}
     kubelet-certificate-authority: {{ kubelet_certificate_authority_file | default ('/etc/kubernetes/pki/ca.crt') }}
-    request-timeout: "300s"
+    request-timeout: "60s"
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
