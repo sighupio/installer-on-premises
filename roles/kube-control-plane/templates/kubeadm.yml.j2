@@ -2,8 +2,6 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
 nodeRegistration:
   name: {{ kubernetes_hostname }}
-  kubeletExtraArgs:
-    cloud-provider: {{ kubernetes_cloud_provider }}
 {% if kubernetes_taints is defined %}
   taints:
 {{ kubernetes_taints | to_yaml | indent(4, true) }}
@@ -42,7 +40,6 @@ apiServer:
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
     enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
-    cloud-provider: {{ kubernetes_cloud_provider }}
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
@@ -105,7 +102,6 @@ controllerManager:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
-    cloud-provider: {{ kubernetes_cloud_provider }}
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}

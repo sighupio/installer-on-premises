@@ -14,7 +14,6 @@ kubernetes_apiserver_advertise_address: "{{ ansible_default_ipv4.address }}"
 kubernetes_pod_cidr: "10.32.0.0/16"
 kubernetes_svc_cidr: "10.96.0.0/16"
 kubernetes_cluster_name: "sighup-prod"
-kubernetes_cloud_provider: ""
 kubernetes_cloud_config: ""
 # Use kubernetes_apiserver_certSANs to set extra alternative names in the API Server signing certificate
 # Accepts a list of strings, in which each string can be either an IP Address or a domain
