@@ -69,4 +69,4 @@ Releasing a new version requires updating two repositories: the SIGHUP Distribut
 12. **Complete Testing**: use a `e2e-YYYYMMDD-{1,2,3,4,N}` tag to trigger all the e2e tests.
 
 > [!NOTE]
-> If tests fail or issues are found, fix the problems in the installer repository and repeat steps 11-12.
+> If tests fail or issues are found, fix the problems in the installer repository and repeat steps 10,11,12.
