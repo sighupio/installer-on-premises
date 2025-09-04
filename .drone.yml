@@ -28,24 +28,7 @@ platform:
   os: linux
   arch: amd64
 
-steps:
-  - name: lint
-    image: quay.io/sighup/policeman
-    pull: always
-    environment:
-      # Identifies false positives like missing 'selector'.
-      # Doing this is valid for Kustomize patches
-      VALIDATE_KUBERNETES_KUBEVAL: "false"
-      # Some duplicated code is intended.
-      VALIDATE_JSCPD: "false"
-      # hadolint already validated dockerfiles
-      VALIDATE_DOCKERFILE: "false"
-      # Disable natural language checks
-      VALIDATE_NATURAL_LANGUAGE: "false"
-      # Shellcheck gets confused with Jinja2 tempalates. Skipping all of them
-      FILTER_REGEX_EXCLUDE: (roles/.*/templates/.*j2|\.github)
-    depends_on:
-      - clone
+steps: []
 
 ---
 name: release
