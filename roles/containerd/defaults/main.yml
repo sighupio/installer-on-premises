@@ -74,9 +74,9 @@ versions:
     runc_version: "v1.2.5" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.26/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10"
   1.33.4:
-    containerd_version: "1.7.26"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
-    runc_version: "v1.2.5" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.26/script/setup/runc-version
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10"
+    containerd_version: "1.7.28"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
+    runc_version: "v1.3.0" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.28/script/setup/runc-version
+    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.33.4/cmd/kubeadm/app/constants/constants.go
 
 # Service options.
 containerd_service_state: started
