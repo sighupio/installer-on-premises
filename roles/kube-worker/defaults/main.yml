@@ -4,6 +4,9 @@ kubelet_config_path: /var/lib/kubelet/kubelet-config
 kubernetes_control_plane_address: "{{ ansible_fqdn }}"
 kubernetes_bootstrap_token: ""
 kubernetes_ca_hash: ""
+# cloud-provider flag removed from kube-apiserver in K8s v1.33+
+# Still used by kube-controller-manager and kubelet
+kubernetes_cloud_provider: ""
 kubernetes_hostname: "{{ ansible_fqdn }}"
 kubernetes_role: "worker"
 kubernetes_taints: []

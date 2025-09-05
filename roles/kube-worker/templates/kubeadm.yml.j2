@@ -9,6 +9,7 @@ discovery:
 nodeRegistration:
   name: {{ kubernetes_hostname }}
   kubeletExtraArgs:
+    cloud-provider: {{ kubernetes_cloud_provider }}
     node-labels: "node.kubernetes.io/role={{ kubernetes_role}}"
 {% if kubernetes_taints | length > 0 %}
   taints:
