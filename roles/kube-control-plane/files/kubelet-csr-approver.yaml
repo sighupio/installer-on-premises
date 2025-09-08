@@ -6,7 +6,7 @@ rules:
 - apiGroups: ["certificates.k8s.io"]
   resources:
     - certificatesigningrequests
-    - certificatesigningrequests/approval 
+    - certificatesigningrequests/approval
   verbs: ["get", "list", "watch", "update", "patch"]
 - apiGroups: ["certificates.k8s.io"]
   resources: ["signers"]

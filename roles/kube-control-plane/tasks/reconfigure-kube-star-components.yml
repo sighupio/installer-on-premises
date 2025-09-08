@@ -5,7 +5,7 @@
     mode: "0755"
 
 - name: Ensure kubernetes pki backup directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ kubeadm_config_path }}/backups/etc-kubernetes-pki/"
     state: directory
     mode: '0755'

@@ -1,11 +1,10 @@
-
 # - name: Copy trusted CA cert to master
 #   ansible.builtin.copy:
 #     src: pki/master/ca.crt
 #     dest: /etc/pki/tls/certs/trusted-ca.crt
 #     mode: '0644'
 - name: Create admission config file for EventRateLimit
-  template:
+  ansible.builtin.template:
     src: admission-config.yaml.j2
     dest: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
     owner: root
@@ -13,39 +12,39 @@
     mode: 0644
 
 - name: Ensuring audit folder is present on machine
-  file:
+  ansible.builtin.file:
     name: "{{ audit_log_dir }}"
     state: directory
 
 - name: Ensuring audit config file is present on machine
-  copy:
+  ansible.builtin.copy:
     src: audit.yml
     dest: "{{ audit_policy_config_path }}"
-    
+
 - name: Ensuring encryption config is present on machine
-  copy:
+  ansible.builtin.copy:
     src: "{{ kubernetes_encryption_config }}"
     dest: "{{ kubernetes_remote_encryption_config }}"
   when: kubernetes_encryption_config != ""
 
 - name: Ensuring kubeadm.yml config file is present on machine
-  template:
+  ansible.builtin.template:
     src: kubeadm.yml.j2
     dest: "{{ kubeadm_config_file }}"
   register: kubeadm_template
 
 - name: Ensuring kubeconfig variable
-  copy:
+  ansible.builtin.copy:
     src: kube.sh
     dest: /etc/profile.d/kube.sh
 
 - name: Check that the /etc/kubernetes/admin.conf exists
-  stat:
+  ansible.builtin.stat:
     path: /etc/kubernetes/admin.conf
   register: admin_conf_stat_result
 
 - name: Check that the /etc/kubernetes/super-admin.conf exists
-  stat:
+  ansible.builtin.stat:
     path: /etc/kubernetes/super-admin.conf
   register: super_admin_conf_stat_result
   when: kubernetes_version is version('1.29.0', 'ge', version_type='semver')
@@ -93,53 +92,53 @@
     - kubeadm_template.changed
 
 - name: Initializing master
-  command: "kubeadm init --config={{ kubeadm_config_file }}"
+  ansible.builtin.command: "kubeadm init --config={{ kubeadm_config_file }}"
   when:
     - (not super_admin_conf_stat_result.stat.exists | default(false)) and (not admin_conf_stat_result.stat.exists)
 
 - name: Getting bootstrap token
-  shell: "kubeadm token create --ttl=30m"
+  ansible.builtin.shell: "kubeadm token create --ttl=30m"
   register: kubernetes_bootstrap_token
 
 - name: Getting Kubernetes CA hash
-  shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* /sha256:/'"
+  ansible.builtin.shell: "openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* /sha256:/'"
   register: kubernetes_ca_hash
 
 - name: Creating users kubeconfig folder
-  file:
+  ansible.builtin.file:
     name: "{{ kubernetes_users_kubeconfig_dir }}"
     state: directory
 
 
 - name: Creating Kubernetes Users with kubeadm
-  shell: "kubeadm kubeconfig user --config={{ kubeadm_config_file }} --client-name={{item}} --org={{kubernetes_users_org}} > {{ kubernetes_users_kubeconfig_dir }}/{{item}}.kubeconfig"
+  ansible.builtin.shell: "kubeadm kubeconfig user --config={{ kubeadm_config_file }} --client-name={{item}} --org={{kubernetes_users_org}} > {{ kubernetes_users_kubeconfig_dir }}/{{item}}.kubeconfig"
   with_items: "{{ kubernetes_users_names }}"
 
 - name: Fix Kuberneters API server address in generated kubeconfigs
-  replace:
+  ansible.builtin.replace:
     path: "{{ kubernetes_users_kubeconfig_dir }}/{{item}}.kubeconfig"
     regexp: '^(\s*server: https://).*$'
     replace: '\1{{ kubernetes_control_plane_address }}'
-  with_items:  "{{ kubernetes_users_names }}"
+  with_items: "{{ kubernetes_users_names }}"
 
 - name: Getting kubeconfig files from master
   run_once: true
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ kubernetes_users_kubeconfig_dir }}/{{item}}.kubeconfig"
     dest: "{{ kubernetes_kubeconfig_path }}/{{item}}.kubeconfig"
     flat: true
-  with_items:  "{{ kubernetes_users_names }}"
+  with_items: "{{ kubernetes_users_names }}"
 
 - name: Getting admin.conf kubeconfig
   run_once: true
-  fetch:
+  ansible.builtin.fetch:
     src: /etc/kubernetes/admin.conf
     dest: "{{ kubernetes_kubeconfig_path }}/admin.conf"
     flat: yes
 
 - name: Getting super-admin.conf kubeconfig
   run_once: true
-  fetch:
+  ansible.builtin.fetch:
     src: /etc/kubernetes/super-admin.conf
     dest: "{{ kubernetes_kubeconfig_path }}/super-admin.conf"
     flat: yes
@@ -169,7 +168,7 @@
     group: root
     mode: '0600'
 
-- include_tasks: upgrade.yml
+- ansible.builtin.include_tasks: upgrade.yml
   when: upgrade
 
 - name: Ensure all PKI and CRT files have restricted permissions
@@ -186,7 +185,7 @@
     - /etc/kubernetes/pki/front-proxy-client.crt
 
 - name: Ensuring kubelet-csr-approver.yaml file is present
-  copy:
+  ansible.builtin.copy:
     src: kubelet-csr-approver.yaml
     dest: /etc/kubernetes/kubelet-csr-approver.yaml
 
