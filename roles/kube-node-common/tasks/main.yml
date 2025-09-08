@@ -67,10 +67,45 @@
       sysctl_file: "{{ sysctl_file_path }}"
     with_items: "{{ kernel_parameters }}"
 
-- include_tasks: "repo-Rocky-RedHat.yml"
+# Install versionlock plugin for package management (needed regardless of repository management)
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: latest
   when: ansible_os_family in ['RedHat', 'Rocky']
 
+- name: Search for yum-plugin-versionlock
+  yum:
+    list: yum-plugin-versionlock
+  register: package_list
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Install yum-plugin-versionlock
+  yum:
+    name: yum-plugin-versionlock
+    state: latest
+  when: ansible_os_family in ['RedHat', 'Rocky'] and package_list.results | length != 0
+
+- name: Search for yum-versionlock
+  yum:
+    list: yum-versionlock
+  register: package_list
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Install yum-versionlock
+  yum:
+    name: yum-versionlock
+    state: latest
+  when: ansible_os_family in ['RedHat', 'Rocky'] and package_list.results | length != 0
+
+- include_tasks: "repo-Rocky-RedHat.yml"
+  when: 
+    - kubernetes_manage_repositories
+    - ansible_os_family in ['RedHat', 'Rocky']
+
 - include_tasks: "repo-{{ ansible_os_family }}.yml"
-  when: ansible_os_family in ['Debian']
+  when: 
+    - kubernetes_manage_repositories
+    - ansible_os_family in ['Debian']
 
 - include_tasks: node.yml
