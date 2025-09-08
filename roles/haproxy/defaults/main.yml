@@ -21,3 +21,7 @@ keepalived_interface: "ens192"
 keepalived_on_k8s_master: false
 keepalived_passphrase: "12345678"
 keepalived_virtual_router_id: "51"
+
+# Repository management
+# Set to false if you manage repositories externally from these playbooks
+haproxy_manage_repositories: true
