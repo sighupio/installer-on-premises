@@ -1,12 +1,12 @@
 ---
 
 - name: Making sure the kubeadm-etcd file is on the instance
-  template:
+  ansible.builtin.template:
     src: kubeadm-etcd.yml.j2
     dest: /etc/etcd/kubeadm-etcd.yml
 
 - name: Generating etcd certificates (server, peer, client)
-  shell: "kubeadm init phase certs {{ item }} --config=/etc/etcd/kubeadm-etcd.yml"
+  ansible.builtin.shell: "kubeadm init phase certs {{ item }} --config=/etc/etcd/kubeadm-etcd.yml"
   with_items:
     - etcd-healthcheck-client
     - etcd-peer
@@ -14,7 +14,7 @@
     - apiserver-etcd-client
 
 - name: Set correct ownership and permissions for etcd certs
-  file:
+  ansible.builtin.file:
     path: "/etc/etcd/pki/etcd/{{ item }}"
     owner: etcd
     group: etcd
@@ -26,4 +26,3 @@
     - server.key
     - healthcheck-client.crt
     - healthcheck-client.key
-   

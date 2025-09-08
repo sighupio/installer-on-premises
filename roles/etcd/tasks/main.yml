@@ -6,13 +6,13 @@
 #       - curl
 #     state: present
 - name: Ensure group etcd exists
-  group:
+  ansible.builtin.group:
     name: etcd
     state: present
     system: true
 
 - name: Ensure user etcd exists
-  user:
+  ansible.builtin.user:
     name: etcd
     group: etcd
     system: true
@@ -20,13 +20,13 @@
     create_home: false
 
 - name: Check if etcd systemd unit runs as root
-  command: systemctl cat etcd
+  ansible.builtin.command: systemctl cat etcd
   register: etcd_unit_cat
   changed_when: false
   ignore_errors: true  # in case etcd does not exist yet
 
 - name: Set etcd_runs_as_root fact
-  set_fact:
+  ansible.builtin.set_fact:
     etcd_runs_as_root: "{{ etcd_unit_cat.stdout is search('^User=root$') }}"
   when: etcd_unit_cat is defined and etcd_unit_cat.stdout is defined
 
@@ -57,13 +57,13 @@
   when: etcd_runs_as_root | default(false)
 
 - name: Generating TLS certificates
-  import_tasks: tls.yml
+  ansible.builtin.import_tasks: tls.yml
 
 - name: Installing and configuring etcd
-  import_tasks: install.yml
+  ansible.builtin.import_tasks: install.yml
 
 - name: Enabling and starting etcd
-  systemd:
+  ansible.builtin.systemd:
     name: etcd
     daemon_reload: yes
     enabled: yes
