@@ -18,7 +18,7 @@ kubelet_config_server_tls_bootstrap: true
 # kubelet_config_tls_cert_file: /var/lib/kubelet/pki/kubelet.crt
 # kubelet_config_tls_private_key_file: /var/lib/kubelet/pki/kubelet.key
 kubelet_certificate_authority_file: /etc/kubernetes/pki/ca.crt
-kubelet_config_pod_pids_limit: 2000
+kubelet_config_pod_pids_limit: 4096
 
 ## Encryption
 tls_cipher_suites:
