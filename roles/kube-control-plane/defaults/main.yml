@@ -46,9 +46,9 @@ oidc_issuer_url: ""
 oidc_client_id: ""
 oidc_ca_file: /etc/ssl/certs/ca-certificates.crt
 oidc_username_claim: email
-oidc_username_prefix: ""
+oidc_username_prefix: "oidc:"
 oidc_groups_claim: groups
-oidc_groups_prefix: ""
+oidc_groups_prefix: "oidc:"
 
 upgrade: False
 
