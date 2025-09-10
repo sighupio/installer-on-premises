@@ -1,8 +1,3 @@
-# - name: Copy trusted CA cert to master
-#   ansible.builtin.copy:
-#     src: pki/master/ca.crt
-#     dest: /etc/pki/tls/certs/trusted-ca.crt
-#     mode: '0644'
 - name: Create admission config file for EventRateLimit
   ansible.builtin.template:
     src: admission-config.yaml.j2
