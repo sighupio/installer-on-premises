@@ -1,17 +1,17 @@
 ---
 
 - name: Ensuring kubeadm.yml config file is present on machine
-  template:
+  ansible.builtin.template:
     src: kubeadm.yml.j2
     dest: "{{ kubeadm_config_file }}"
 
 - name: Check that the /etc/kubernetes/kubelet.conf exists on nodes
-  stat:
+  ansible.builtin.stat:
     path: /etc/kubernetes/kubelet.conf
   register: node_kubelet_conf
 
 - name: Running kubeadm on the nodes
-  command: "kubeadm join --config {{ kubeadm_config_file }}"
+  ansible.builtin.command: "kubeadm join --config {{ kubeadm_config_file }}"
   when:
     - not node_kubelet_conf.stat.exists
 
@@ -26,3 +26,18 @@
 - name: Reconfigure kubelet
   ansible.builtin.include_tasks: reconfigure-kubelet.yml
   when: kubelet_config_file.stat.exists
+
+- name: Ensure kubelet config.yaml has restricted permissions
+  ansible.builtin.file:
+    path: /var/lib/kubelet/config.yaml
+    owner: root
+    group: root
+    mode: '0600'
+  when: kubelet_config_file.stat.exists
+
+- name: Ensure that the kubelet service config file exists and has correct permissions
+  ansible.builtin.file:
+    path: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    owner: root
+    group: root
+    mode: '0600'

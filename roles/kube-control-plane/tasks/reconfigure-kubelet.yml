@@ -16,13 +16,13 @@
     src: /var/lib/kubelet/config.yaml
     dest: "{{ kubelet_config_path }}/backups/kubelet-config-backup-{{ timestamp }}.yaml"
     remote_src: true
-    mode: '0644'
+    mode: '0600'
 
 - name: Generate KubeletConfiguration patches file from template
   ansible.builtin.template:
     src: KubeletConfiguration-v1beta1.yml.j2
     dest: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
-    mode: '0644'
+    mode: '0600'
   when: not upgrade
   notify:
     - Apply kubelet-config patches

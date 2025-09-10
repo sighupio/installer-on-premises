@@ -41,7 +41,14 @@ apiServer:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
-    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit,NodeRestriction,DenyServiceExternalIPs"
+    admission-control-config-file: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
+    cloud-provider: {{ kubernetes_cloud_provider }}
+    kubelet-certificate-authority: {{ kubelet_certificate_authority_file | default ('/etc/kubernetes/pki/ca.crt') }}
+    request-timeout: "60s"
+{% if kubernetes_cloud_config != "" %}
+    cloud-config: {{ kubernetes_cloud_config }}
+{% endif %}
     audit-log-maxage: "{{ audit_policy_max_age }}"
     audit-log-path: "{{ audit_log_dir }}/kube-apiserver-audit.log"
     audit-policy-file: {{ audit_policy_config_path }}
@@ -65,6 +72,7 @@ apiServer:
 {% if api_audiences is defined %}
     api-audiences: "{{ api_audiences }}"
 {% endif %}
+    profiling: "false"
   extraVolumes:
   - name: audit-files
     hostPath: {{ audit_log_dir }}
@@ -74,6 +82,11 @@ apiServer:
   - name: audit-policy
     hostPath: {{ audit_policy_config_path }}
     mountPath: {{ audit_policy_config_path }}
+    readOnly: true
+    pathType: File
+  - name: admission
+    hostPath: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}
+    mountPath: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}
     readOnly: true
     pathType: File
 {% if kubernetes_encryption_config != "" %}
@@ -89,6 +102,7 @@ scheduler:
 {% if tls_cipher_suites is defined %}
     tls-cipher-suites: {{ tls_cipher_suites | join(',') }}
 {% endif %}
+    profiling: "false"
 controllerManager:
   extraArgs:
 {% if tls_cipher_suites is defined %}
@@ -97,6 +111,12 @@ controllerManager:
     cloud-provider: {{ kubernetes_cloud_provider }}
 {% if kubernetes_cloud_config != "" %}
     cloud-config: {{ kubernetes_cloud_config }}
+{% endif %}
+# Disables profiling (always false by default)
+    profiling: "false"
+# Reduced default value for maximum number of terminated pods kept by the controller-manager before removal (default 12500)
+{% if terminated_pod_gc_threshold is defined %}
+    terminated-pod-gc-threshold: "{{ terminated_pod_gc_threshold }}"
 {% endif %}
 {% if kubernetes_cloud_config != "" %}
   extraVolumes:
@@ -126,6 +146,6 @@ mode: ipvs
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 cgroupDriver: systemd
-{% if tls_cipher_suites is defined %}
-tlsCipherSuites: {{ tls_cipher_suites | to_yaml | indent(2) }}
+{% if kubelet_tls_cipher_suites is defined %}
+tlsCipherSuites: {{ kubelet_tls_cipher_suites | to_yaml | indent(2) }}
 {% endif %}

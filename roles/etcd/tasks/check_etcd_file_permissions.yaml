@@ -1,0 +1,23 @@
+- name: Check correct ownership of etcd certs and data
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: etcd
+    group: etcd
+    state: directory
+    recurse: true
+    mode: "0700"
+  loop:
+    - "{{ etcd_data_dir }}"
+    - /etc/etcd/pki/etcd
+
+- name: Check intermediate etcd directory ownerships (non-recursive)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: etcd
+    group: etcd
+    state: directory
+    recurse: false
+    mode: '0750'
+  loop:
+    - "{{ etcd_config_dir }}"
+    - "{{ etcd_certs_dir }}"
