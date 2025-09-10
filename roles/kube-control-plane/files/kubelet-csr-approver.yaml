@@ -1,0 +1,71 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: csr-auto-approver
+rules:
+- apiGroups: ["certificates.k8s.io"]
+  resources:
+    - certificatesigningrequests
+    - certificatesigningrequests/approval
+  verbs: ["get", "list", "watch", "update", "patch"]
+- apiGroups: ["certificates.k8s.io"]
+  resources: ["signers"]
+  resourceNames: ["kubernetes.io/kubelet-serving"]
+  verbs: ["approve"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: csr-auto-approver-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csr-auto-approver
+subjects:
+- kind: ServiceAccount
+  name: csr-auto-approver
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csr-auto-approver
+  namespace: kube-system
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kubelet-csr-approver
+  namespace: kube-system
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: csr-auto-approver
+          restartPolicy: OnFailure
+          containers:
+          - name: approver
+            image: registry.sighup.io/fury/kubelet-csr-approver:v1.0
+            imagePullPolicy: IfNotPresent
+            command: ["/usr/local/bin/csr-approver.sh"]
+            env:
+              - name: LOG_LEVEL
+                value: "info"
+              - name: DRY_RUN
+                value: "false"
+            securityContext:
+              runAsUser: 10001
+              runAsGroup: 10001
+              runAsNonRoot: true
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+          tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/control-plane

@@ -118,12 +118,15 @@ all:
     # - {registry: "secondary.example.com:8080", username: "example", password: "hunter2", insecure_skip_verify: true, mirror_endpoint: [] } 
     # kubernetes_encryption_config: "./encryption-config.yml"
     # tls_cipher_suites:
-    #   - "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
-    #   - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
-    #   - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
-    #   - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-    #   - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
-    #   - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
     #   - "TLS_AES_128_GCM_SHA256"
     #   - "TLS_AES_256_GCM_SHA384"
     #   - "TLS_CHACHA20_POLY1305_SHA256"
+    #   - "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+    #   - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+    #   - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305"
+    #   - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"
+    #   - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+    #   - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+    #   - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+    #   - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+

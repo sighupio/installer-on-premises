@@ -1,16 +1,16 @@
 ---
 - name: Get host architecture
-  set_fact:
+  ansible.builtin.set_fact:
     host_architecture: "{{ ansible_facts['architecture'] | regex_replace('^x86_64$', 'amd64') | regex_replace('^aarch64$', 'arm64') }}"
 
 - name: Getting etcd release
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ etcd_download_url }}/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-{{ host_architecture }}.tar.gz"
     dest: /tmp
     remote_src: yes
 
 - name: Installing etcd to binary dir
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/etcd-{{ etcd_version }}-linux-{{ host_architecture }}/{{ item }}"
     dest: "{{ etcd_binary_dir }}/{{ item }}"
     remote_src: yes
@@ -20,18 +20,18 @@
     - etcdctl
 
 - name: Copying etcd config envs
-  template:
+  ansible.builtin.template:
     src: etcd.env.j2
     dest: /etc/etcd/etcd.env
   notify: Reload etcd
 
 - name: Copying etcdctl config envs
-  template:
+  ansible.builtin.template:
     src: etcdctl.sh.j2
     dest: /etc/profile.d/etcdctl.sh
 
 - name: Copying systemd unit
-  template:
+  ansible.builtin.template:
     src: etcd.service.j2
     dest: /etc/systemd/system/etcd.service
   notify: Reload etcd
