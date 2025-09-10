@@ -118,8 +118,11 @@ containerd_sysctl:
   - { state: "present", name: "net.bridge.bridge-nf-call-iptables", value: "1" }
   - { state: "present", name: "net.ipv4.ip_forward", value: "1" }
 
-# Enable nvidia container toolkit
+# Repository management
+# Set to false if you manage repositories externally from these playbooks (includes NVIDIA repos when enabled)
+containerd_manage_repositories: true
 
+# Enable nvidia container toolkit
 containerd_nvidia_enabled: false
 
 # Registry Auth Configuration

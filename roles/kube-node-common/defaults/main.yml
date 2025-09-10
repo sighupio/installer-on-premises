@@ -206,3 +206,7 @@ kubernetes_repo_deprecated:
     - "https://packages.cloud.google.com/yum/doc/yum-key.gpg"
     - "https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
   yum_gpg_key_check: "yes"
+
+# Repository management
+# Set to false if you manage repositories externally from these playbooks
+kubernetes_manage_repositories: true

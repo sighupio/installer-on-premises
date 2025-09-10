@@ -26,7 +26,9 @@
       update_cache: true
     changed_when: false
 
-  when: ansible_os_family == 'Debian'
+  when: 
+    - containerd_manage_repositories
+    - ansible_os_family == 'Debian'
 
 - block:
   - name: Install yum-utils
@@ -67,7 +69,9 @@
       repo_gpgcheck: "yes"
       state: present
     notify: Clean yum cache
-  when: ansible_os_family in ['RedHat', 'Rocky']
+  when: 
+    - containerd_manage_repositories
+    - ansible_os_family in ['RedHat', 'Rocky']
 
 - name: Install Nvidia Container Toolkit
   package:
