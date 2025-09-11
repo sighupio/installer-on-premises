@@ -11,8 +11,8 @@
     - name: Create etcd PKI directory
       file:
         path: /etc/etcd/pki/etcd
-        owner: etcd
-        group: etcd
+        owner: root
+        group: root
         mode: 0750
         state: directory
     - name: Create Kubernetes PKI directory
@@ -26,8 +26,8 @@
       copy:
         src: "{{ pki_dir }}/etcd/{{ item }}"
         dest: "/etc/etcd/pki/etcd/{{ item }}"
-        owner: etcd
-        group: etcd
+        owner: root
+        group: root
         mode: 0600
       with_items:
         - ca.crt
