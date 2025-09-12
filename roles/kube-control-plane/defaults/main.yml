@@ -15,7 +15,7 @@ kubernetes_pod_cidr: "10.32.0.0/16"
 kubernetes_svc_cidr: "10.96.0.0/16"
 kubernetes_cluster_name: "sighup-prod"
 # cloud-provider flag removed from kube-apiserver in K8s v1.33+
-# Still used by kube-controller-manager and kubelet
+# Still used by kube-controller-manager and kubelet; also in kube-apiserver in supported versions 1.31 and 1.32
 kubernetes_cloud_provider: ""
 # cloud-config flag removed from kube-apiserver in K8s v1.33+
 kubernetes_cloud_config: ""

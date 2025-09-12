@@ -43,10 +43,12 @@ apiServer:
 {% endif %}
     enable-admission-plugins: "NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit,NodeRestriction,DenyServiceExternalIPs"
     admission-control-config-file: "{{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') }}"
+{% if kubernetes_cloud_provider != "" and kubernetes_version is version('1.33.0', '<') %}
     cloud-provider: {{ kubernetes_cloud_provider }}
+{% endif %}
     kubelet-certificate-authority: {{ kubelet_certificate_authority_file | default ('/etc/kubernetes/pki/ca.crt') }}
     request-timeout: "60s"
-{% if kubernetes_cloud_config != "" %}
+{% if kubernetes_cloud_config != "" and kubernetes_version is version('1.33.0', '<') %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
     audit-log-maxage: "{{ audit_policy_max_age }}"
@@ -93,6 +95,13 @@ apiServer:
   - name: encryption-configuration
     hostPath: {{ kubernetes_remote_encryption_config }}
     mountPath: {{ kubernetes_remote_encryption_config }}
+    readOnly: true
+    pathType: File
+{% endif %}
+{% if kubernetes_cloud_config != "" and kubernetes_version is version('1.33.0', '<') %}
+  - name: cloud
+    hostPath: {{ kubernetes_cloud_config }}
+    mountPath: {{ kubernetes_cloud_config }}
     readOnly: true
     pathType: File
 {% endif %}
