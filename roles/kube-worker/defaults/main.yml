@@ -5,7 +5,7 @@ kubernetes_control_plane_address: "{{ ansible_fqdn }}"
 kubernetes_bootstrap_token: ""
 kubernetes_ca_hash: ""
 # cloud-provider flag removed from kube-apiserver in K8s v1.33+
-# Still used by kube-controller-manager and kubelet
+# Still used by kube-controller-manager and kubelet, also in kube-apiserver in supported versions 1.31 and 1.32
 kubernetes_cloud_provider: ""
 kubernetes_hostname: "{{ ansible_fqdn }}"
 kubernetes_role: "worker"
