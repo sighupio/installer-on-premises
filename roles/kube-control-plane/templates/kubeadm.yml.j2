@@ -51,11 +51,11 @@ apiServer:
 {% if kubernetes_cloud_config != "" and kubernetes_version is version('1.33.0', '<') %}
     cloud-config: {{ kubernetes_cloud_config }}
 {% endif %}
-    audit-log-maxage: "{{ audit_policy_max_age }}"
     audit-log-path: "{{ audit_log_dir }}/kube-apiserver-audit.log"
     audit-policy-file: {{ audit_policy_config_path }}
-    audit-log-maxsize: "50"
-    audit-log-maxbackup: "20"
+    audit-log-maxage: "{{ audit_policy_max_age }}"
+    audit-log-maxsize: "{{ audit_policy_max_size }}"
+    audit-log-maxbackup: "{{ audit_policy_max_backup }}"
 {% if kubernetes_encryption_config != "" %}
     encryption-provider-config: {{ kubernetes_remote_encryption_config }}
 {% endif %}
