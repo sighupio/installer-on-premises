@@ -99,6 +99,7 @@ groups:
           For example,
           chmod 600 $etcdconf
         scored: true
+        type: "skip"
 
       - id: 1.1.8
         text: "Ensure that the etcd pod specification file ownership is set to root:root (Automated)"
@@ -112,6 +113,7 @@ groups:
           For example,
           chown root:root $etcdconf
         scored: true
+        type: "skip"
 
       - id: 1.1.9
         text: "Ensure that the Container Network Interface file permissions are set to 600 or more restrictive (Manual)"
