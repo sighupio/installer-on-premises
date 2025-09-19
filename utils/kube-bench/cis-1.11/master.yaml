@@ -628,14 +628,17 @@ groups:
         scored: true
 
       - id: 1.2.20
-        text: "Ensure that the --request-timeout argument is set as appropriate (Manual)"
+        text: "Ensure that the --request-timeout argument is set as appropriate (Automated)"
         audit: "/bin/ps -ef | grep $apiserverbin | grep -v grep"
-        type: manual
+        tests:
+          test_items:
+            - flag: "--request-timeout"
+              set: true
         remediation: |
           Edit the API server pod specification file $apiserverconf
           and set the below parameter as appropriate and if needed.
           For example, --request-timeout=300s
-        scored: false
+        scored: true
 
       - id: 1.2.21
         text: "Ensure that the --service-account-lookup argument is set to true (Automated)"
