@@ -103,6 +103,8 @@ containerd_metrics_grpc_histogram: false
 
 containerd_max_container_log_line_size: 16384
 
+containerd_device_ownership_from_security_context: false
+
 # Kernel modules.
 containerd_modprobe:
   - { state: "present", option: "br_netfilter" }

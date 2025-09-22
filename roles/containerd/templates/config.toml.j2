@@ -18,6 +18,7 @@ oom_score = {{ containerd_oom_score }}
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ versions[kubernetes_version].sandbox_image }}"
     max_container_log_line_size = {{ containerd_max_container_log_line_size }}
+    device_ownership_from_security_context = {{ containerd_device_ownership_from_security_context | string | lower }}
     [plugins."io.containerd.grpc.v1.cri".containerd]
       default_runtime_name = "{{ 'nvidia' if containerd_nvidia_enabled else 'runc' }}"
       snapshotter = "{{ containerd_snapshotter | default('overlayfs') }}"
