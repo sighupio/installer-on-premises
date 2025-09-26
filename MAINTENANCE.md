@@ -70,3 +70,19 @@ Releasing a new version requires updating two repositories: the SIGHUP Distribut
 
 > [!NOTE]
 > If tests fail or issues are found, fix the problems in the installer repository and repeat steps 10,11,12.
+
+## CIS Kubernetes Benchmark
+
+Whenever a new version of the CIS Kubernetes Benchmark (e.g. `cis-1.12`) is released, the compliance of the SIGHUP Distribution on-premises installer must be verified by means of [kube-bench](https://github.com/aquasecurity/kube-bench). This tool evaluates compliance by running a set of checks defined in a configuration corresponding to the specific platform it's executed on (see [kube-bench configs](https://github.com/aquasecurity/kube-bench/tree/main/cfg)).
+
+We maintain our `customized configuration` under `utils/kube-bench`, which differs from the upstream rule set by skipping checks that are not applicable in our context. Every deviation from upstream must be documented, including a clear justification for the change.
+
+To effectively maintain CIS compliance, follow the steps below:
+1. **Monitor for CIS Benchmark and kube-bench updates**: Regularly check for new versions of the CIS Kubernetes Benchmark and the corresponding updates in the kube-bench rule sets.
+2. **Compare upstream configs with our custom rule set**: When a new config version is released in the kube-bench repository, compare it against our current configuration. Identify any new, modified, or removed checks and determine the necessary updates to maintain compliance with the latest CIS version.
+3. **Ensure full traceability for all skipped or modified checks**:
+  - Avoid commenting out tests to exclude them; use explicit skip mechanisms instead.
+  - When modifying a test, limit changes to the minimum necessary.
+  - In all cases, provide a clear justification for the change, and ensure it is properly documented and tracked.
+4. **Test updated configurations**: Run the available kube-bench version using the updated configuration to validate the results. Ensure that there are no false positives, errors, or unexpected behavior introduced by the changes.
+5. **Update documentation and changelogs**: Ensure that any updates made to the custom rule set are reflected in the documentation. Maintain a changelog with a commit history that explains what changed and why.
