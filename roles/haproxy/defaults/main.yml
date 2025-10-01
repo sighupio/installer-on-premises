@@ -23,5 +23,5 @@ keepalived_passphrase: "12345678"
 keepalived_virtual_router_id: "51"
 
 # Repository management
-# Set to false if you manage repositories externally from these playbooks
-haproxy_manage_repositories: true
+# Set to true if you manage repositories externally from these playbooks
+haproxy_self_managed_repositories: false

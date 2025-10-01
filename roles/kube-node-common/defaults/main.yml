@@ -208,5 +208,5 @@ kubernetes_repo_deprecated:
   yum_gpg_key_check: "yes"
 
 # Repository management
-# Set to false if you manage repositories externally from these playbooks
-kubernetes_manage_repositories: true
+# Set to true if you manage repositories externally from these playbooks
+kubernetes_self_managed_repositories: false

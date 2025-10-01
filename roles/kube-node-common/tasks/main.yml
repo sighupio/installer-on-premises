@@ -99,13 +99,13 @@
   when: ansible_os_family in ['RedHat', 'Rocky'] and package_list.results | length != 0
 
 - include_tasks: "repo-Rocky-RedHat.yml"
-  when: 
-    - kubernetes_manage_repositories
+  when:
+    - not kubernetes_self_managed_repositories
     - ansible_os_family in ['RedHat', 'Rocky']
 
 - include_tasks: "repo-{{ ansible_os_family }}.yml"
-  when: 
-    - kubernetes_manage_repositories
+  when:
+    - not kubernetes_self_managed_repositories
     - ansible_os_family in ['Debian']
 
 - include_tasks: node.yml
