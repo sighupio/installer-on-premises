@@ -37,8 +37,8 @@
 #   - https://github.com/zenetys/rpm-haproxy/issues/9
 
 - name: Ensure /etc/yum.repos.d/ exists (RHEL)
-  when: 
-    - haproxy_manage_repositories
+  when:
+    - not haproxy_self_managed_repositories
     - ansible_os_family in ['RedHat', 'Rocky']
   ansible.builtin.file:
     path: /etc/yum.repos.d/
@@ -46,8 +46,8 @@
     mode: "0755"
 
 - name: Adding Zenetys HAProxy Repo (RHEL)
-  when: 
-    - haproxy_manage_repositories
+  when:
+    - not haproxy_self_managed_repositories
     - ansible_os_family in ['RedHat', 'Rocky']
   ansible.builtin.yum_repository:
     name: zenetys
@@ -59,16 +59,16 @@
 # We need to add this repos because the official repo has outdated versions
 # https://github.com/haproxy/wiki/wiki/Packages
 - name: Adding HAProxy PPA (Ubuntu)
-  when: 
-    - haproxy_manage_repositories
+  when:
+    - not haproxy_self_managed_repositories
     - ansible_facts['distribution'] == "Ubuntu"
   ansible.builtin.apt_repository:
     repo: "ppa:vbernat/haproxy-{{ haproxy_package.Ubuntu.version }}"
     state: present
 
 - name: Adding HAProxy Repository (Debian)
-  when: 
-    - haproxy_manage_repositories
+  when:
+    - not haproxy_self_managed_repositories
     - ansible_facts['distribution'] == "Debian"
   block:
     - name: Get repo GPG key

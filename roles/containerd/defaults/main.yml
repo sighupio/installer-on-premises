@@ -121,8 +121,8 @@ containerd_sysctl:
   - { state: "present", name: "net.ipv4.ip_forward", value: "1" }
 
 # Repository management
-# Set to false if you manage repositories externally from these playbooks (includes NVIDIA repos when enabled)
-containerd_manage_repositories: true
+# Set to true if you manage repositories externally from these playbooks (includes NVIDIA repos when enabled)
+containerd_self_managed_repositories: false
 
 # Enable nvidia container toolkit
 containerd_nvidia_enabled: false
