@@ -470,6 +470,7 @@ groups:
           seccompDefault configuration file setting.
           By default the seccomp profile is not enabled.
         scored: false
+        type: "skip"
 
       - id: 4.2.15
         text: "Ensure that the --IPAddressDeny is set to any (Manual)"
