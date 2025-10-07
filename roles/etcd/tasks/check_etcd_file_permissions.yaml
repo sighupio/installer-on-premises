@@ -1,23 +1,37 @@
-- name: Check correct ownership of etcd certs and data
-  ansible.builtin.file:
-    path: "{{ item }}"
-    owner: etcd
-    group: etcd
-    state: directory
+- name: Find all directories present in configuration trees
+  ansible.builtin.find:
+    paths:
+      - "{{ etcd_data_dir }}"
+      - "{{ etcd_certs_dir }}"
     recurse: true
-    mode: "0700"
-  loop:
-    - "{{ etcd_data_dir }}"
-    - /etc/etcd/pki/etcd
+    file_type: directory
+  register: etcd_directories
 
-- name: Check intermediate etcd directory ownerships (non-recursive)
+- name: Find all files present in configuration trees
+  ansible.builtin.find:
+    paths:
+      - "{{ etcd_data_dir }}"
+      - "{{ etcd_certs_dir }}"
+    recurse: true
+    file_type: file
+  register: etcd_files
+
+- name: Set correct ownership and permissions of etcd config directories
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     owner: etcd
     group: etcd
     state: directory
     recurse: false
-    mode: '0750'
-  loop:
-    - "{{ etcd_config_dir }}"
-    - "{{ etcd_certs_dir }}"
+    mode: "0750"
+  loop: "{{ etcd_directories.files }}"
+
+- name: Set correct ownership and permissions of etcd db and pki files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: etcd
+    group: etcd
+    state: file
+    recurse: false
+    mode: "{{ '0400' if item.path.endswith('.key') else '0600' }}"
+  loop: "{{ etcd_files.files }}"
