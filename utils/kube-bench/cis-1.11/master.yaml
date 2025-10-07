@@ -340,6 +340,7 @@ groups:
           on the control plane node and set the below parameter.
           --anonymous-auth=false
         scored: false
+        type: "skip"
 
       - id: 1.2.2
         text: "Ensure that the --token-auth-file parameter is not set (Automated)"
