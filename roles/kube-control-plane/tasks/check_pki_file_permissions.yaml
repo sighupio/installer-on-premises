@@ -1,0 +1,35 @@
+- name: Find all directories present in configuration trees
+  ansible.builtin.find:
+    paths:
+      - /etc/kubernetes/pki
+    recurse: true
+    file_type: directory
+  register: pki_directories
+
+- name: Find all files present in configuration trees
+  ansible.builtin.find:
+    paths:
+      - /etc/kubernetes/pki
+    recurse: true
+    file_type: file
+  register: pki_files
+
+- name: Set correct ownership and permissions of Kubernetes pki directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    state: directory
+    recurse: false
+    mode: "0750"
+  loop: "{{ pki_directories.files }}"
+
+- name: Set correct ownership and permissions of Kubernetes pki files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    state: file
+    recurse: false
+    mode: "{{ '0400' if item.path.endswith('.key') else '0600' }}"
+  loop: "{{ pki_files.files }}"

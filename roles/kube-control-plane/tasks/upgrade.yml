@@ -37,14 +37,3 @@
     - Restart kubelet
     - Kubelet verifications
   when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')
-
-- name: Ensure all PKI and CRT files have restricted permissions
-  ansible.builtin.file:
-    path: "{{ item }}"
-    owner: root
-    group: root
-    mode: '0600'
-  with_items:
-    - /etc/kubernetes/pki/apiserver.crt
-    - /etc/kubernetes/pki/apiserver-kubelet-client.crt
-    - /etc/kubernetes/pki/front-proxy-client.crt
