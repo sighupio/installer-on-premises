@@ -367,6 +367,7 @@ groups:
           systemctl daemon-reload
           systemctl restart kubelet.service
         scored: false
+        type: "skip"
 
       - id: 4.2.10
         text: "Ensure that the --rotate-certificates argument is not set to false (Automated)"
