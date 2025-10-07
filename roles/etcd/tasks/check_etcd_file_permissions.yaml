@@ -1,37 +1,49 @@
-- name: Find all directories present in configuration trees
+- name: Set correct ownership and permissions of etcd config directory
+  ansible.builtin.file:
+    path: "/etc/etcd"
+    owner: root
+    group: root
+    state: directory
+    recurse: false
+    mode: "0755"
+
+- name: Find all directories present in etcd trees
   ansible.builtin.find:
     paths:
-      - "{{ etcd_data_dir }}"
-      - "{{ etcd_certs_dir }}"
+      - "/var/lib/etcd"
+      - "/etc/etcd/pki"
     recurse: true
     file_type: directory
   register: etcd_directories
 
-- name: Find all files present in configuration trees
+- name: Find all files present in etcd trees
   ansible.builtin.find:
     paths:
-      - "{{ etcd_data_dir }}"
-      - "{{ etcd_certs_dir }}"
+      - "/var/lib/etcd"
+      - "/etc/etcd/pki"
     recurse: true
     file_type: file
   register: etcd_files
 
-- name: Set correct ownership and permissions of etcd config directories
+- name: Set correct ownership and permissions of etcd directories
   ansible.builtin.file:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     owner: etcd
     group: etcd
     state: directory
     recurse: false
-    mode: "0750"
-  loop: "{{ etcd_directories.files }}"
+    mode: "0700"
+  loop:
+  - "{{ etcd_directories.files | map(attribute='path') }}"
+  - "/var/lib/etcd"
+  - "/etc/etcd/pki"
 
 - name: Set correct ownership and permissions of etcd db and pki files
   ansible.builtin.file:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     owner: etcd
     group: etcd
     state: file
     recurse: false
-    mode: "{{ '0400' if item.path.endswith('.key') else '0600' }}"
-  loop: "{{ etcd_files.files }}"
+    mode: "{{ '0400' if item.endswith('.key') else '0600' }}"
+  loop: "{{ etcd_files.files | map(attribute='path') }}"
