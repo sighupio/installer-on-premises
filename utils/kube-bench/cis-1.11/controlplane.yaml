@@ -10,7 +10,7 @@ groups:
     checks:
       - id: 3.1.1
         text: "Client certificate authentication should not be used for users (Manual)"
-        type: "manual"
+        type: "skip"
         remediation: |
           Alternative mechanisms provided by Kubernetes such as the use of OIDC should be
           implemented in place of client certificates.
