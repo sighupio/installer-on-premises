@@ -498,6 +498,7 @@ groups:
           AlwaysPullImages.
           --enable-admission-plugins=...,AlwaysPullImages,...
         scored: false
+        type: "skip"
 
       - id: 1.2.12
         text: "Ensure that the admission control plugin ServiceAccount is set (Automated)"
