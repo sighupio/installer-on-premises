@@ -19,6 +19,9 @@
     shell: /sbin/nologin
     create_home: false
 
+- name: Generating TLS certificates
+  ansible.builtin.import_tasks: tls.yml
+
 - name: Check if etcd systemd unit runs as root
   ansible.builtin.command: systemctl cat etcd
   register: etcd_unit_cat
@@ -32,9 +35,6 @@
   ansible.builtin.set_fact:
     etcd_runs_as_root: "{{ etcd_unit_cat.stdout is search('^User=root$') }}"
   when: etcd_unit_cat is defined and etcd_unit_cat.stdout is defined
-
-- name: Generating TLS certificates
-  ansible.builtin.import_tasks: tls.yml
 
 - name: Installing and configuring etcd
   ansible.builtin.import_tasks: install.yml
