@@ -33,10 +33,7 @@
     state: directory
     recurse: false
     mode: "0700"
-  loop:
-  - "{{ etcd_directories.files | map(attribute='path') }}"
-  - "/var/lib/etcd"
-  - "/etc/etcd/pki"
+  loop: "{{ (etcd_directories.files | map(attribute='path') | list) + ['/var/lib/etcd', '/etc/etcd/pki'] }}"
 
 - name: Set correct ownership and permissions of etcd db and pki files
   ansible.builtin.file:
