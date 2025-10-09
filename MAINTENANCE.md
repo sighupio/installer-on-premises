@@ -83,6 +83,6 @@ To effectively maintain CIS compliance, follow the steps below:
 3. **Ensure full traceability for all skipped or modified checks**:
   - Avoid commenting out tests to exclude them; use explicit skip mechanisms instead.
   - When modifying a test, limit changes to the minimum necessary.
-  - In all cases, provide a clear justification for the change, and ensure it is properly documented and tracked.
+  - In all cases, provide a clear justification for the change, and ensure it is properly documented and tracked (refer to the [kube-bench configuration changelog](./utils/kube-bench/CHANGELOG.md))
 4. **Test updated configurations**: Run the available kube-bench version using the updated configuration to validate the results. Ensure that there are no false positives, errors, or unexpected behavior introduced by the changes.
 5. **Update documentation and changelogs**: Ensure that any updates made to the custom rule set are reflected in the documentation. Maintain a changelog with a commit history that explains what changed and why.
