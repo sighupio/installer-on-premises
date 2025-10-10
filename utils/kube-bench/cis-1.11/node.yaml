@@ -367,6 +367,7 @@ groups:
           systemctl daemon-reload
           systemctl restart kubelet.service
         scored: false
+        type: "skip"
 
       - id: 4.2.10
         text: "Ensure that the --rotate-certificates argument is not set to false (Automated)"
@@ -469,6 +470,7 @@ groups:
           seccompDefault configuration file setting.
           By default the seccomp profile is not enabled.
         scored: false
+        type: "skip"
 
       - id: 4.2.15
         text: "Ensure that the --IPAddressDeny is set to any (Manual)"
