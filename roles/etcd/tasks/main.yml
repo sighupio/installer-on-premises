@@ -19,45 +19,22 @@
     shell: /sbin/nologin
     create_home: false
 
+- name: Generating TLS certificates
+  ansible.builtin.import_tasks: tls.yml
+
 - name: Check if etcd systemd unit runs as root
   ansible.builtin.command: systemctl cat etcd
   register: etcd_unit_cat
   changed_when: false
   ignore_errors: true  # in case etcd does not exist yet
 
+- name: Set correct etcd file permissions 
+  ansible.builtin.include_tasks: check_etcd_file_permissions.yaml
+
 - name: Set etcd_runs_as_root fact
   ansible.builtin.set_fact:
     etcd_runs_as_root: "{{ etcd_unit_cat.stdout is search('^User=root$') }}"
   when: etcd_unit_cat is defined and etcd_unit_cat.stdout is defined
-
-
-- name: Set correct etcd file permissions when etcd already runs as 'etcd' or is not running
-  ansible.builtin.include_tasks: check_etcd_file_permissions.yaml
-  when: not etcd_runs_as_root | default(false)
-
-- name: Set correct etcd file permissions and fix service if etcd runs as root
-  block:
-    - name: Include permission fix logic
-      ansible.builtin.include_tasks: check_etcd_file_permissions.yaml
-
-    - name: Deploy correct systemd unit file for etcd user
-      ansible.builtin.template:
-        src: etcd.service.j2
-        dest: /etc/systemd/system/etcd.service
-        owner: root
-        group: root
-        mode: '0644'
-      notify: Reload etcd
-
-    - name: Start etcd as 'etcd' user
-      ansible.builtin.systemd:
-        name: etcd
-        daemon_reload: true
-        state: started
-  when: etcd_runs_as_root | default(false)
-
-- name: Generating TLS certificates
-  ansible.builtin.import_tasks: tls.yml
 
 - name: Installing and configuring etcd
   ansible.builtin.import_tasks: install.yml
@@ -65,8 +42,8 @@
 - name: Enabling and starting etcd
   ansible.builtin.systemd:
     name: etcd
-    daemon_reload: yes
-    enabled: yes
+    daemon_reload: true
+    enabled: true
     state: started
 
 - name: Renewal etcd certificates
