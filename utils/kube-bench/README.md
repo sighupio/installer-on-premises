@@ -31,9 +31,14 @@ Then, you can execute it:
 ```
 
 You can also execute it passing the configuration to use:
+
 ```bash
 ./kube-bench --config /etc/kube-bench/cfg/config.yaml
 ```
+
+> **Note:**
+> In our setup, we use **Option 1** with a **custom configuration** located at `utils/kube-bench/config.yaml`.
+> For details on how this configuration differs from the upstream defaults, see the [CHANGELOG.md](./CHANGELOG.md).
 
 ### Option 2: Run as a Kubernetes Job
 

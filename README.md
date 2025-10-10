@@ -9,7 +9,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-v1.33.4-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.33.4--rev.1-blue)
 ![License](https://img.shields.io/github/license/sighupio/installer-on-premises?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -68,7 +68,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 roles:
   - name: on-premises
-    version: v1.33.4
+    version: v1.33.4-rev.1
 ```
 
 1. Execute `furyctl legacy vendor -H` to download the roles
@@ -80,10 +80,10 @@ roles:
 <!-- Links -->
 
 [furyctl-repo]: https://github.com/sighupio/furyctl
-[compatibility-matrix]: https://github.com/sighupio/fury-kubernetes-on-premises/blob/master/docs/COMPATIBILITY_MATRIX.md
-[sd-repo]: https://github.com/sighupio/fury-distribution
-[sd-docs]: https://docs.kubernetesfury.com/docs/distribution/
-[getting-started]: https://docs.kubernetesfury.com/docs/getting-started/fury-on-vms
+[compatibility-matrix]: https://github.com/sighupio/installer-on-premises/blob/master/docs/COMPATIBILITY_MATRIX.md
+[sd-repo]: https://github.com/sighupio/distribution
+[sd-docs]: https://docs.sighup.io/docs/distribution/
+[getting-started]: https://docs.sighup.io/docs/getting-started/distro-on-vms
 
 <!-- </SD-DOCS> -->
 
