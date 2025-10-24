@@ -8,7 +8,7 @@ Conflicts=etcd2.service
 User=etcd
 Group=etcd
 EnvironmentFile=/etc/etcd/etcd.env
-ExecStart=/usr/local/bin/etcd --listen-metrics-urls=http://{{ etcd_address }}:2378
+ExecStart={{ etcd_binary_dir }}/etcd --listen-metrics-urls=http://{{ etcd_address }}:2378
 
 Type=notify
 TimeoutStartSec=0
