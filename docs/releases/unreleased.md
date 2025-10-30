@@ -8,12 +8,12 @@ Welcome to the latest release of `on-premises` module of [`SIGHUP Distribution`]
 
 | Package                                        | Supported Version | Previous Version |
 | ---------------------------------------------- | ----------------- | ---------------- |
-| [etcd](roles/etcd)                             | `3.5.21`          | `3.5.16`         |
-| [haproxy](roles/haproxy)                       | `3.0`             | `No update`      |
-| [containerd](roles/containerd)                 | `1.7.28`          | `1.7.26`         |
-| [kube-node-common](roles/kube-node-common)     | `-`               | `Updated`        |
-| [kube-control-plane](roles/kube-control-plane) | `-`               | `Updated`        |
-| [kube-worker](roles/kube-worker)               | `-`               | `No update`      |
+| [etcd](roles/etcd)                             | `-`               | `3.5.21`         |
+| [haproxy](roles/haproxy)                       | `-`               | `3.0`            |
+| [containerd](roles/containerd)                 | `-`               | `1.7.28`         |
+| [kube-node-common](roles/kube-node-common)     | `-`               | `-`              |
+| [kube-control-plane](roles/kube-control-plane) | `-`               | `-`              |
+| [kube-worker](roles/kube-worker)               | `-`               | `-`.             |
 
 ## New features 🌟
 
