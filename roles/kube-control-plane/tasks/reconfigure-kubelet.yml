@@ -30,6 +30,12 @@
     - Restart kubelet
     - Kubelet verifications
 
+- name: DEBUG - timeout to simulate interruption
+  ansible.builtin.pause:
+    seconds: 30
+  when:
+    - not upgrade
+
 - name: Apply kubelet config patch if newer than current config
   when: not upgrade
   block:
