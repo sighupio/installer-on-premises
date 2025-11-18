@@ -29,10 +29,6 @@
     - Restart kubelet
     - Kubelet verifications
 
-- name: DEBUG - timeout to simulate interruption
-  ansible.builtin.pause:
-    seconds: 30
-
 - name: Apply kubelet config patch if newer than current config or it's upgrade
   block:
     - name: Stat kubelet config file
