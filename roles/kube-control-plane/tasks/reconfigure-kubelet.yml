@@ -43,15 +43,6 @@
         path: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
       register: kubelet_patch
 
-    - name: DEBUG - patch kubeletconfiguration.yaml più nuova di config.yaml
-      ansible.builtin.debug:
-        msg: "Patch kubeletconfiguration.yaml: {{ kubelet_patch.stat.mtime }} è più nuova di /var/lib/kubelet/config.yaml: {{ kubelet_config.stat.mtime }}"
-      when:
-        - not kubelet_patch_result.changed
-        - kubelet_patch.stat.exists
-        - kubelet_config.stat.exists
-        - kubelet_patch.stat.mtime > kubelet_config.stat.mtime
-
     - name: Fix old kubelet config if patch is newer
       ansible.builtin.shell: |
         kubeadm upgrade node phase kubelet-config --patches {{ kubelet_config_path }}/patches/
