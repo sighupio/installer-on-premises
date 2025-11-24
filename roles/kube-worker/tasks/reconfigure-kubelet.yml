@@ -23,7 +23,36 @@
     src: KubeletConfiguration-v1beta1.yml.j2
     dest: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
     mode: '0600'
+  register: kubelet_patch_result
   notify:
     - Apply kubelet-config patches
     - Restart kubelet
     - Kubelet verifications
+
+- name: Apply kubelet config patch if newer than current config or it's upgrade
+  block:
+    - name: Stat kubelet config file
+      ansible.builtin.stat:
+        path: /var/lib/kubelet/config.yaml
+      register: kubelet_config
+
+    - name: Stat kubelet patch file
+      ansible.builtin.stat:
+        path: "{{ kubelet_config_path }}/patches/kubeletconfiguration.yaml"
+      register: kubelet_patch
+
+    - name: Re-apply kubelet-config if needed
+      ansible.builtin.command: >
+        kubeadm upgrade node phase kubelet-config --patches {{ kubelet_config_path }}/patches/
+      when:
+        - kubelet_patch.stat.exists
+        - kubelet_config.stat.exists
+        - not kubelet_patch_result.changed
+        - (
+            kubelet_patch.stat.mtime > kubelet_config.stat.mtime
+            or
+            (skip_kubelet_upgrade is defined and (skip_kubelet_upgrade | bool) == false)
+          )
+      notify:
+        - Restart kubelet
+        - Kubelet verifications

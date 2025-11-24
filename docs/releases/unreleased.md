@@ -19,7 +19,8 @@ Welcome to the latest release of `on-premises` module of [`SIGHUP Distribution`]
 
 # Fixes
 - [[#141](https://github.com/sighupio/installer-on-premises/pull/152)] **Do not hardcode etcd_binary_dir in etcd.service.j2**: Avoid hardcoding the etcd path inside the service in order to support setting a different download location.
-    
+- [[#155](https://github.com/sighupio/installer-on-premises/pull/155)] **Make kubelet config update idempotent on workers-nodes/control-plane roles**: Self-heal after interrupted runs and post-upgrade rewrites to keep `/var/lib/kubelet/config.yaml` in sync with the updated kubelet configurations.
+
 ## Breaking Changes 💔
 
 ## Update Guide 🦮
