@@ -31,7 +31,9 @@ vrrp_instance VI_1 {
 
     unicast_peer {
         {% for host in ansible_play_batch %}
-        {{ hostvars[host]['ansible_host'] }}
+        {% if hostvars[host]['ansible_host'] not in ansible_all_ipv4_addresses %}
+        {{ hostvars[host]['ansible_host']  }}
+        {% endif %}
         {% endfor %}
     }
 
