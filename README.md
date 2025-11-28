@@ -9,7 +9,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-v1.33.4--rev.2-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.34.2-blue)
 ![License](https://img.shields.io/github/license/sighupio/installer-on-premises?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -30,9 +30,9 @@ The following packages are included in the Fury Kubernetes on-premises module:
 
 | Package                                        | Version  | Description                                                                   |
 | ---------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
-| [etcd](roles/etcd)                             | `3.5.21` | Ansible role to install etcd as systemd service                               |
+| [etcd](roles/etcd)                             | `3.6.5`  | Ansible role to install etcd as systemd service                               |
 | [haproxy](roles/haproxy)                       | `3.0`    | Ansible role to install HAProxy as Kubernetes load balancer for the APIServer |
-| [containerd](roles/containerd)                 | `1.7.28` | Ansible role to install containerd as container runtime                       |
+| [containerd](roles/containerd)                 | `1.7.29` | Ansible role to install containerd as container runtime                       |
 | [kube-node-common](roles/kube-node-common)     | `-`      | Ansible role to install prerequisites for Kubernetes setup                    |
 | [kube-control-plane](roles/kube-control-plane) | `-`      | Ansible role to install control-plane nodes                                   |
 | [kube-worker](roles/kube-worker)               | `-`      | Ansible role to install worker nodes and join them to the cluster             |
@@ -41,7 +41,7 @@ Click on each package to see its full documentation.
 
 ## Compatibility
 
-This version is compatible with Kubernetes 1.33.4 plus the complete list in the compatibility matrix.
+This version is compatible with Kubernetes 1.34.2 plus the complete list in the compatibility matrix.
 
 Check the [compatibility matrix][compatibility-matrix] for additional information about previous releases of the module.
 
@@ -68,7 +68,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 roles:
   - name: on-premises
-    version: v1.33.4-rev.2
+    version: v1.34.2
 ```
 
 1. Execute `furyctl legacy vendor -H` to download the roles
