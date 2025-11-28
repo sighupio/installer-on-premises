@@ -20,6 +20,7 @@ Welcome to the latest release of `on-premises` module of [`SIGHUP Distribution`]
 # Fixes
 - [[#141](https://github.com/sighupio/installer-on-premises/pull/152)] **Do not hardcode etcd_binary_dir in etcd.service.j2**: Avoid hardcoding the etcd path inside the service in order to support setting a different download location.
 - [[#155](https://github.com/sighupio/installer-on-premises/pull/155)] **Make kubelet config update idempotent on workers-nodes/control-plane roles**: Self-heal after interrupted runs and post-upgrade rewrites to keep `/var/lib/kubelet/config.yaml` in sync with the updated kubelet configurations.
+- [[#157](https://github.com/sighupio/installer-on-premises/pull/157)] **Stop adding node as a unicast peer in keepalived**: the HAProxy role was adding the node itself as a unicast peer in keepalived's configuration, resulting in a `equal priority advert received from remote host with our IP address` warning in the logs. The node is not added anymore.
 
 ## Breaking Changes 💔
 
