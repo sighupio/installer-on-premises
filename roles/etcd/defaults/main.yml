@@ -17,4 +17,4 @@ etcd_certs:
   - apiserver-etcd-client.key
 etcd_on_control_plane: true
 etcd_upgrade: false
-local_pki_dir: ""
+etcd_local_pki_dir: ""
