@@ -1,3 +1,28 @@
+- name: Create Kubernetes PKI directory
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki
+    owner: root
+    group: root
+    mode: "0750"
+    state: directory
+  when: kubernetes_local_pki_dir | length > 0
+
+- name: Copy Kubernetes CA
+  ansible.builtin.copy:
+    src: "{{ kubernetes_local_pki_dir }}/master/{{ item }}"
+    dest: "/etc/kubernetes/pki/{{ item }}"
+    owner: root
+    group: root
+    mode: "{{ '0400' if item.endswith('.key') else '0600' }}"
+  with_items:
+    - ca.crt
+    - ca.key
+    - front-proxy-ca.crt
+    - front-proxy-ca.key
+    - sa.key
+    - sa.pub
+  when: kubernetes_local_pki_dir | length > 0
+
 - name: Create admission config file for EventRateLimit
   ansible.builtin.template:
     src: admission-config.yaml.j2
