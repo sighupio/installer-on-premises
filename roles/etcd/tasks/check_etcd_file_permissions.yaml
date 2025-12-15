@@ -1,12 +1,3 @@
-- name: Set correct ownership and permissions of etcd config directory
-  ansible.builtin.file:
-    path: "/etc/etcd"
-    owner: root
-    group: root
-    state: directory
-    recurse: false
-    mode: "0755"
-
 - name: Find all directories present in etcd trees
   ansible.builtin.find:
     paths:
