@@ -9,7 +9,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-v1.33.4--rev.1-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.33.4--rev.2-blue)
 ![License](https://img.shields.io/github/license/sighupio/installer-on-premises?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -68,7 +68,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 roles:
   - name: on-premises
-    version: v1.33.4-rev.1
+    version: v1.33.4-rev.2
 ```
 
 1. Execute `furyctl legacy vendor -H` to download the roles
