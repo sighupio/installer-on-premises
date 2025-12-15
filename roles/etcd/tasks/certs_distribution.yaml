@@ -3,6 +3,18 @@
 # license that can be found in the LICENSE file.
 
 ---
+- name: Create etcd PKI directory on control plane nodes
+  ansible.builtin.file:
+    path: "{{ etcd_certs_dir }}/etcd"
+    owner: root
+    group: root
+    mode: "0750"
+    state: directory
+  loop: "{{ groups['master'] }}"
+  loop_control:
+    loop_var: item
+  delegate_to: "{{ item }}"
+
 - name: Fetching certificates from etcd
   run_once: true
   delegate_to: "{{ groups.etcd[0] }}"
