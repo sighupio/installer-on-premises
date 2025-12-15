@@ -22,19 +22,8 @@
 - name: Generating TLS certificates
   ansible.builtin.import_tasks: tls.yml
 
-- name: Check if etcd systemd unit runs as root
-  ansible.builtin.command: systemctl cat etcd
-  register: etcd_unit_cat
-  changed_when: false
-  ignore_errors: true  # in case etcd does not exist yet
-
 - name: Set correct etcd file permissions 
   ansible.builtin.include_tasks: check_etcd_file_permissions.yaml
-
-- name: Set etcd_runs_as_root fact
-  ansible.builtin.set_fact:
-    etcd_runs_as_root: "{{ etcd_unit_cat.stdout is search('^User=root$') }}"
-  when: etcd_unit_cat is defined and etcd_unit_cat.stdout is defined
 
 - name: Installing and configuring etcd
   ansible.builtin.import_tasks: install.yml
