@@ -29,4 +29,4 @@ All versions below v1.28.7 will not work due to the removal of the old package r
 ## Warnings
 
 - v1.31.4 has a known issue that affects the upgrade process, please use v1.31.4-rev.1 instead. See issue [#115](https://github.com/sighupio/fury-kubernetes-on-premises/issues/115) for more information.
-- v1.33.4 (as well as v1.33.4-rev.1) has a known issue that may leave the kubelet configurations in an inconsistent state in particular use cases, please use v1.33.4-rev.2 instead. See issue [#154](https://github.com/sighupio/fury-kubernetes-on-premises/issues/154) for more details.
+- v1.33.4 (as well as v1.32.4) has a known issue that may leave the kubelet configurations in an inconsistent state in particular use cases, please use v1.33.4-rev.2 instead. See issue [#154](https://github.com/sighupio/fury-kubernetes-on-premises/issues/154) for more details.
