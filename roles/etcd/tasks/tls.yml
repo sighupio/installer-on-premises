@@ -1,5 +1,26 @@
 ---
 
+- name: Create etcd PKI directory
+  ansible.builtin.file:
+    path: "{{ etcd_certs_dir }}/etcd"
+    owner: etcd
+    group: etcd
+    mode: "0700"
+    state: directory
+  when: etcd_local_pki_dir | length > 0
+
+- name: Copy etcd CA
+  ansible.builtin.copy:
+    src: "{{ etcd_local_pki_dir }}/etcd/{{ item }}"
+    dest: "{{ etcd_certs_dir }}/etcd/{{ item }}"
+    owner: etcd
+    group: etcd
+    mode:  "{{ '0400' if item.endswith('.key') else '0600' }}"
+  with_items:
+    - ca.crt
+    - ca.key
+  when: etcd_local_pki_dir | length > 0
+
 - name: Making sure the kubeadm-etcd file is on the instance
   ansible.builtin.template:
     src: kubeadm-etcd.yml.j2

@@ -35,6 +35,7 @@ kubernetes_users_org: sighup
 kubernetes_users_kubeconfig_dir: /etc/kubernetes/users
 kubernetes_encryption_config: ""
 kubernetes_remote_encryption_config: "/etc/kubernetes/encryption-config.yml"
+kubernetes_local_pki_dir: ""
 
 etcd:
   endpoints:
