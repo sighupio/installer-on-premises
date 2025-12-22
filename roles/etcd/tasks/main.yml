@@ -21,6 +21,10 @@
     shell: /sbin/nologin
     create_home: false
 
+- name: Install kubeadm for certificate management (dedicated etcd nodes only)
+  ansible.builtin.include_tasks: install-kubeadm.yml
+  when: not etcd_on_control_plane
+
 - name: Generating TLS certificates
   ansible.builtin.import_tasks: tls.yml
 

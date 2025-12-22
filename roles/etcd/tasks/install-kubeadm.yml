@@ -1,0 +1,97 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+---
+- name: Set package version separator on RedHat
+  set_fact:
+    _pkg_sep: "-"
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Set package version separator on Debian/Ubuntu
+  set_fact:
+    _pkg_sep: "="
+  when: ansible_os_family == 'Debian'
+
+- name: Set Kubernetes package version suffix on RedHat
+  set_fact:
+    _pkg_suffix: ""
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Set Kubernetes package version suffix on Debian/Ubuntu
+  set_fact:
+    _pkg_suffix: "-*"
+  when: ansible_os_family == 'Debian'
+
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: latest
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Search for yum-plugin-versionlock
+  yum:
+    list: yum-plugin-versionlock
+  register: package_list
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Install yum-plugin-versionlock
+  yum:
+    name: yum-plugin-versionlock
+    state: latest
+  when: ansible_os_family in ['RedHat', 'Rocky'] and package_list.results | length != 0
+
+- name: Search for yum-versionlock
+  yum:
+    list: yum-versionlock
+  register: package_list
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Install yum-versionlock
+  yum:
+    name: yum-versionlock
+    state: latest
+  when: ansible_os_family in ['RedHat', 'Rocky'] and package_list.results | length != 0
+
+- name: Include repo setup for RedHat/Rocky
+  include_tasks: "{{ role_path }}/../kube-node-common/tasks/repo-Rocky-RedHat.yml"
+  when:
+    - not kubernetes_self_managed_repositories
+    - ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Include repo setup for Debian
+  include_tasks: "{{ role_path }}/../kube-node-common/tasks/repo-{{ ansible_os_family }}.yml"
+  when:
+    - not kubernetes_self_managed_repositories
+    - ansible_os_family in ['Debian']
+
+- name: Check packages facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Un-hold kubeadm package
+  ansible.builtin.dpkg_selections:
+    name: "kubeadm"
+    selection: install
+  when: ansible_os_family == 'Debian' and 'kubeadm' in ansible_facts.packages
+
+- name: Delete lock for kubeadm package
+  ansible.builtin.shell: "yum versionlock delete kubeadm"
+  register: result
+  when: ansible_os_family in ['RedHat', 'Rocky'] and 'kubeadm' in ansible_facts.packages
+  failed_when: result.rc != 0 and 'no matches' not in result.stderr
+
+- name: Install kubeadm package (for etcd certificate management)
+  ansible.builtin.package:
+    name: "kubeadm{{ _pkg_sep }}{{ kubeadm_version }}{{ _pkg_suffix }}"
+    state: present
+
+- name: Hold kubeadm package
+  ansible.builtin.dpkg_selections:
+    name: "kubeadm"
+    selection: hold
+  when: ansible_os_family == 'Debian'
+
+- name: Add lock for kubeadm package
+  ansible.builtin.shell: "yum versionlock kubeadm"
+  when: ansible_os_family in ['RedHat', 'Rocky']
