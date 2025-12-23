@@ -3,63 +3,11 @@ etcd_name: "{{ inventory_hostname }}"
 # check the const SupportedEtcdVersion on this source https://github.com/kubernetes/kubernetes/blob/v1.32.3/cmd/kubeadm/app/constants/constants.go (change the version accordingly)
 etcd_version: v3.5.26 # as indicated here https://etcd.io/docs/v3.6/upgrades/upgrade_3_6/, before upgrading to version 3.6, make sure that all 3.5 members are updated to at least 3.5.26
 
-# kubeadm version for dedicated etcd nodes
+# Kubeadm binary for dedicated etcd nodes certificate management
 kubeadm_version: "{{ kubernetes_version }}"
-kubernetes_self_managed_repositories: false
-
-# Repository configuration for kubeadm installation on dedicated etcd nodes
-dependencies:
-  "1.32.10":
-    apt:
-      name: k8s-1.32
-      repo: "deb https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /"
-      gpg_key: "https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key"
-      gpg_key_id: "DE15B14486CD377B9E876E1A234654DA9A296436"
-    yum:
-      name: k8s-1.32
-      repo: https://pkgs.k8s.io/core:/stable:/v1.32/rpm/
-      gpg_key: https://pkgs.k8s.io/core:/stable:/v1.32/rpm/repodata/repomd.xml.key
-      gpg_key_check: yes
-      repo_gpg_check: yes
-  "1.33.6":
-    apt:
-      name: k8s-1.33
-      repo: "deb https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /"
-      gpg_key: "https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key"
-      gpg_key_id: "DE15B14486CD377B9E876E1A234654DA9A296436"
-    yum:
-      name: k8s-1.33
-      repo: https://pkgs.k8s.io/core:/stable:/v1.33/rpm/
-      gpg_key: https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
-      gpg_key_check: yes
-      repo_gpg_check: yes
-  "1.34.2":
-    apt:
-      name: k8s-1.34
-      repo: "deb https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /"
-      gpg_key: "https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key"
-      gpg_key_id: "DE15B14486CD377B9E876E1A234654DA9A296436"
-    yum:
-      name: k8s-1.34
-      repo: https://pkgs.k8s.io/core:/stable:/v1.34/rpm/
-      gpg_key: https://pkgs.k8s.io/core:/stable:/v1.34/rpm/repodata/repomd.xml.key
-      gpg_key_check: yes
-      repo_gpg_check: yes
-
-dependencies_override: {}
-
-# Required by kube-node-common repo setup tasks
-kubernetes_repo_distribution: "xenial"
-kubernetes_repo_deprecated:
-  name: "kubernetes"
-  apt_repo: "deb https://apt.kubernetes.io/ kubernetes-{{ kubernetes_repo_distribution }} main"
-  apt_gpg_key: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
-  apt_gpg_key_id: "A362B822F6DEDC652817EA46B53DC80D13EDEF05"
-  yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
-  yum_gpg_key:
-    - "https://packages.cloud.google.com/yum/doc/yum-key.gpg"
-    - "https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-  yum_gpg_key_check: "yes"
+kubeadm_binary_dir: "/usr/local/bin"
+kubeadm_download_url: "https://dl.k8s.io/release/v{{ kubeadm_version }}/bin/linux/{{ host_architecture }}/kubeadm"
+kubeadm_checksum: "sha256:https://dl.k8s.io/release/v{{ kubeadm_version }}/bin/linux/{{ host_architecture }}/kubeadm.sha256"
 
 etcd_download_url: https://storage.googleapis.com/etcd
 etcd_data_dir: /var/lib/etcd
