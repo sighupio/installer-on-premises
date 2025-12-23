@@ -9,17 +9,45 @@
       name: apt-transport-https
       state: latest
 
-  - name: Import Nvidia public key
+  - name: Import Nvidia public key (apt-key method)
     apt_key:
       id: "{{ nvidia_repo['apt_gpg_key_id'] }}"
       url: "{{ nvidia_repo['apt_gpg_key'] }}"
       state: present
+    when: (ansible_distribution == 'Debian' and ansible_distribution_major_version | int <= 12) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int < 24)
 
-  - name: Add Nvidia APT repository
+  - name: Add Nvidia APT repository (apt-key method)
     apt_repository:
       filename: "{{ nvidia_repo['name'] }}"
       repo: "{{ nvidia_repo['apt_repo'] }}"
       state: present
+    when: (ansible_distribution == 'Debian' and ansible_distribution_major_version | int <= 12) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int < 24)
+
+  - name: Setup Nvidia repository (signed-by method)
+    when: (ansible_distribution == 'Debian' and ansible_distribution_major_version | int >= 13) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 24)
+    block:
+      - name: Ensure keyring directory exists
+        file:
+          path: /etc/apt/keyrings
+          state: directory
+          mode: '0755'
+
+      - name: Download Nvidia public key
+        ansible.builtin.get_url:
+          url: "{{ nvidia_repo['apt_gpg_key'] }}"
+          dest: /tmp/nvidia-container-toolkit.asc
+          force: true
+
+      - name: Dearmor and install Nvidia public key
+        ansible.builtin.shell:
+          cmd: gpg --dearmor -o /etc/apt/keyrings/nvidia-container-toolkit.gpg < /tmp/nvidia-container-toolkit.asc
+          creates: /etc/apt/keyrings/nvidia-container-toolkit.gpg
+
+      - name: Add Nvidia APT repository with signed-by
+        ansible.builtin.apt_repository:
+          filename: "{{ nvidia_repo['name'] }}"
+          repo: "{{ nvidia_repo['apt_repo'] | regex_replace('^(deb)\\s+', 'deb [signed-by=/etc/apt/keyrings/nvidia-container-toolkit.gpg] ') }}"
+          state: present
 
   - name: Update APT cache
     apt:

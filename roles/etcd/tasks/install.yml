@@ -1,8 +1,4 @@
 ---
-- name: Get host architecture
-  ansible.builtin.set_fact:
-    host_architecture: "{{ ansible_facts['architecture'] | regex_replace('^x86_64$', 'amd64') | regex_replace('^aarch64$', 'arm64') }}"
-
 - name: Getting etcd release
   ansible.builtin.unarchive:
     src: "{{ etcd_download_url }}/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-{{ host_architecture }}.tar.gz"
