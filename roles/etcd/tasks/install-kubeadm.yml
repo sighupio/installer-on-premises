@@ -1,3 +1,4 @@
+---
 - name: Be sure firewalld is disabled
   ansible.builtin.systemd:
     name: firewalld

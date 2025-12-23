@@ -1,3 +1,4 @@
+---
 - name: Create etcd PKI directory
   ansible.builtin.file:
     path: "{{ etcd_certs_dir }}/etcd"
