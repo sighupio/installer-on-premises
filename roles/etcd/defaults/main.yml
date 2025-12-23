@@ -9,7 +9,7 @@ kubernetes_self_managed_repositories: false
 
 # Repository configuration for kubeadm installation on dedicated etcd nodes
 dependencies:
-  "1.32.10":
+  "1.32.11":
     apt:
       name: k8s-1.32
       repo: "deb https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /"
@@ -21,7 +21,7 @@ dependencies:
       gpg_key: https://pkgs.k8s.io/core:/stable:/v1.32/rpm/repodata/repomd.xml.key
       gpg_key_check: yes
       repo_gpg_check: yes
-  "1.33.6":
+  "1.33.7":
     apt:
       name: k8s-1.33
       repo: "deb https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /"
@@ -33,7 +33,7 @@ dependencies:
       gpg_key: https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
       gpg_key_check: yes
       repo_gpg_check: yes
-  "1.34.2":
+  "1.34.3":
     apt:
       name: k8s-1.34
       repo: "deb https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /"
