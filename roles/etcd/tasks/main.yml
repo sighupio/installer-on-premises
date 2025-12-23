@@ -1,3 +1,8 @@
+---
+- name: Get host architecture
+  ansible.builtin.set_fact:
+    host_architecture: "{{ ansible_facts['architecture'] | regex_replace('^x86_64$', 'amd64') | regex_replace('^aarch64$', 'arm64') }}"
+
 - name: Set correct ownership and permissions of etcd config directory
   ansible.builtin.file:
     path: "/etc/etcd"
@@ -20,6 +25,10 @@
     system: true
     shell: /sbin/nologin
     create_home: false
+
+- name: Install kubeadm for certificate management (dedicated etcd nodes only)
+  ansible.builtin.include_tasks: install-kubeadm.yml
+  when: not etcd_on_control_plane
 
 - name: Generating TLS certificates
   ansible.builtin.import_tasks: tls.yml

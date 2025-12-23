@@ -2,6 +2,13 @@
 etcd_name: "{{ inventory_hostname }}"
 # check the const SupportedEtcdVersion on this source https://github.com/kubernetes/kubernetes/blob/v1.32.3/cmd/kubeadm/app/constants/constants.go (change the version accordingly)
 etcd_version: v3.5.26 # as indicated here https://etcd.io/docs/v3.6/upgrades/upgrade_3_6/, before upgrading to version 3.6, make sure that all 3.5 members are updated to at least 3.5.26
+
+# Kubeadm binary for dedicated etcd nodes certificate management
+kubeadm_version: "{{ kubernetes_version }}"
+kubeadm_binary_dir: "/usr/local/bin"
+kubeadm_download_url: "https://dl.k8s.io/release/v{{ kubeadm_version }}/bin/linux/{{ host_architecture }}/kubeadm"
+kubeadm_checksum: "sha256:https://dl.k8s.io/release/v{{ kubeadm_version }}/bin/linux/{{ host_architecture }}/kubeadm.sha256"
+
 etcd_download_url: https://storage.googleapis.com/etcd
 etcd_data_dir: /var/lib/etcd
 etcd_binary_dir: /usr/local/bin

@@ -1,0 +1,21 @@
+---
+- name: Be sure firewalld is disabled
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: false
+  ignore_errors: true
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Be sure firewalld is stopped
+  ansible.builtin.systemd:
+    name: firewalld
+    state: stopped
+  ignore_errors: true
+  when: ansible_os_family in ['RedHat', 'Rocky']
+
+- name: Download kubeadm binary
+  ansible.builtin.get_url:
+    url: "{{ kubeadm_download_url }}"
+    dest: "{{ kubeadm_binary_dir }}/kubeadm"
+    mode: "0755"
+    checksum: "{{ kubeadm_checksum }}"
