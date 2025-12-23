@@ -9,7 +9,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-v1.34.2-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.34.3-blue)
 ![License](https://img.shields.io/github/license/sighupio/installer-on-premises?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -41,7 +41,7 @@ Click on each package to see its full documentation.
 
 ## Compatibility
 
-This version is compatible with Kubernetes 1.34.2 plus the complete list in the compatibility matrix.
+This version is compatible with Kubernetes 1.34.3 plus the complete list in the compatibility matrix.
 
 Check the [compatibility matrix][compatibility-matrix] for additional information about previous releases of the module.
 
@@ -68,7 +68,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 roles:
   - name: on-premises
-    version: v1.34.2
+    version: v1.34.3
 ```
 
 1. Execute `furyctl legacy vendor -H` to download the roles
