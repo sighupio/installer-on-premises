@@ -15,13 +15,3 @@
   tags:
     - etcd
 
-- name: Kubeadm package upgrade on etcd nodes
-  become: true
-  hosts: etcd
-  tasks:
-    - name: Include kube-node-common role
-      ansible.builtin.include_role:
-        name: kube-node-common
-      when: not etcd_on_control_plane
-  tags:
-    - kube-node-common
