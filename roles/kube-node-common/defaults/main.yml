@@ -1,5 +1,5 @@
 ---
-kubernetes_version: "1.34.3"
+kubernetes_version: "1.34.4"
 kubelet_version: "{{ kubernetes_version }}"
 kubectl_version: "{{ kubernetes_version }}"
 kubeadm_version: "{{ kubernetes_version }}"
@@ -214,7 +214,7 @@ dependencies:
       gpg_key: https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
       gpg_key_check: yes
       repo_gpg_check: yes
-  "1.34.3":
+  "1.34.4":
     critools_version: "1.34.0" # https://github.com/kubernetes-sigs/cri-tools?tab=readme-ov-file#compatibility-matrix-cri-tools--kubernetes
     apt:
       name: k8s-1.34
