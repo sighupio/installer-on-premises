@@ -145,13 +145,15 @@ apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 bindAddress: 0.0.0.0
 clusterCIDR: "{{ kubernetes_pod_cidr }}"
+{% if kube_proxy_mode == 'ipvs' %}
 ipvs:
   excludeCIDRs: null
   minSyncPeriod: 0s
   scheduler: ""
   syncPeriod: 30s
+{% endif %}
 metricsBindAddress: 0.0.0.0:10249
-mode: ipvs
+mode: {{ kube_proxy_mode }}
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
