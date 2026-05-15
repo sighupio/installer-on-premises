@@ -1,4 +1,4 @@
-# Copyright (c) 2022 SIGHUP s.r.l All rights reserved.
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -6,13 +6,6 @@
   hosts: master[0]
   gather_facts: false
   tasks:
-    - name: Verify current kube-proxy mode is IPVS
-      delegate_to: localhost
-      ansible.builtin.shell: "kubectl logs -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null | grep -i 'Using ipvs Proxier'"
-      register: ipvs_check
-      failed_when: false
-      changed_when: false
-
     - name: Check if already using nftables
       delegate_to: localhost
       ansible.builtin.shell: "kubectl logs -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null | grep -i 'Using nftables Proxier'"
@@ -24,6 +17,13 @@
       ansible.builtin.meta: end_play
       when: nftables_check.rc == 0
 
+    - name: Verify current kube-proxy mode is IPVS
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl logs -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null | grep -i 'Using ipvs Proxier'"
+      register: ipvs_check
+      failed_when: false
+      changed_when: false
+
     - name: Fail if kube-proxy is not in IPVS mode
       ansible.builtin.fail:
         msg: "kube-proxy is not running in IPVS mode. Cannot migrate."
@@ -31,11 +31,12 @@
 
     - name: Patch kube-proxy ConfigMap to nftables mode
       delegate_to: localhost
-      ansible.builtin.shell: >
-        kubectl get configmap -n kube-system kube-proxy -o json --kubeconfig=./{{ admin_kubeconfig_filename }} |
-        sed 's/"mode": *"ipvs"/"mode": "nftables"/' |
-        sed 's/mode: ipvs/mode: nftables/' |
-        kubectl apply --server-side --kubeconfig=./{{ admin_kubeconfig_filename }} -f -
+      ansible.builtin.shell: |
+        kubectl get configmap -n kube-system kube-proxy -o yaml --kubeconfig=./{{ admin_kubeconfig_filename }} \
+          | yq '.data."config.conf" |= (from_yaml | .mode = "nftables" | to_yaml)' \
+          | kubectl apply --server-side --force-conflicts --kubeconfig=./{{ admin_kubeconfig_filename }} -f -
+      args:
+        executable: /bin/bash
       register: configmap_patch
       changed_when: "'configured' in configmap_patch.stdout"
 
@@ -62,15 +63,6 @@
       failed_when: false
       changed_when: false
 
-    - name: Check if Cilium is installed
-      delegate_to: localhost
-      ansible.builtin.shell: "kubectl get daemonset -n kube-system cilium -o name --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null"
-      register: cilium_check
-      failed_when: false
-      changed_when: false
-      when: calico_check.rc != 0
-
-    # Calico: patch Installation + restart calico-node
     - name: Patch Calico Installation to nftables dataplane
       delegate_to: localhost
       ansible.builtin.shell: >
@@ -79,31 +71,12 @@
         --kubeconfig=./{{ admin_kubeconfig_filename }}
       when: calico_check.rc == 0
 
-    - name: Restart calico-node DaemonSet
-      delegate_to: localhost
-      ansible.builtin.shell: "kubectl rollout restart -n calico-system daemonset/calico-node --kubeconfig=./{{ admin_kubeconfig_filename }}"
-      when: calico_check.rc == 0
-
-    - name: Wait for calico-node rollout
-      delegate_to: localhost
-      ansible.builtin.shell: "kubectl rollout status -n calico-system daemonset/calico-node --timeout=300s --kubeconfig=./{{ admin_kubeconfig_filename }}"
-      when: calico_check.rc == 0
-
-    # Cilium: restart cilium DaemonSet
-    - name: Restart Cilium DaemonSet
-      delegate_to: localhost
-      ansible.builtin.shell: "kubectl rollout restart -n kube-system daemonset/cilium --kubeconfig=./{{ admin_kubeconfig_filename }}"
-      when: calico_check.rc != 0 and cilium_check.rc == 0
-
-    - name: Wait for Cilium rollout
-      delegate_to: localhost
-      ansible.builtin.shell: "kubectl rollout status -n kube-system daemonset/cilium --timeout=300s --kubeconfig=./{{ admin_kubeconfig_filename }}"
-      when: calico_check.rc != 0 and cilium_check.rc == 0
-
     - name: Wait for cluster to stabilize
       ansible.builtin.pause:
         seconds: 15
 
+    # NOTE: in airgapped environments replace
+    # the image with one reachable from the cluster.
     - name: Validate connectivity
       delegate_to: localhost
       ansible.builtin.shell: >

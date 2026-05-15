@@ -43,7 +43,7 @@
     - ip_vs_wrr
     - ip_vs_sh
     - "{{ _conntrack_module_name }}"
-  when: kube_proxy_mode == 'ipvs'
+  when: kubernetes_kube_proxy_mode == 'ipvs'
 
 - name: Ensure IPVS kernel modules are loaded at boot
   ansible.builtin.lineinfile:
@@ -57,13 +57,13 @@
     - ip_vs_wrr
     - ip_vs_sh
     - "{{ _conntrack_module_name }}"
-  when: kube_proxy_mode == 'ipvs'
+  when: kubernetes_kube_proxy_mode == 'ipvs'
 
 - name: Ensure conntrack kernel module is loaded (nftables mode)
   modprobe:
     name: "{{ _conntrack_module_name }}"
     state: present
-  when: kube_proxy_mode == 'nftables'
+  when: kubernetes_kube_proxy_mode == 'nftables'
 
 - name: Ensure conntrack kernel module is loaded at boot (nftables mode)
   ansible.builtin.lineinfile:
@@ -71,7 +71,7 @@
     path: /etc/modules-load.d/kubernetes.conf
     line: "{{ _conntrack_module_name }}"
     create: yes
-  when: kube_proxy_mode == 'nftables'
+  when: kubernetes_kube_proxy_mode == 'nftables'
 
 - name: Start and enable systemd-modules-load service
   ansible.builtin.systemd:
@@ -92,7 +92,7 @@
       - ipset
       - ipvsadm
     state: latest
-  when: kube_proxy_mode == 'ipvs'
+  when: kubernetes_kube_proxy_mode == 'ipvs'
 
 # Installing Kubernetes packages
 
