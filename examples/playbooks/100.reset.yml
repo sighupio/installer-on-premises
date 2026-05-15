@@ -8,6 +8,10 @@
       shell: "iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X"
     - name: Clean IPVS
       shell: "ipvsadm --clear"
+      when: kubernetes_kube_proxy_mode | default('ipvs') == 'ipvs'
+    - name: Clean nftables
+      shell: "nft flush ruleset"
+      when: kubernetes_kube_proxy_mode | default('ipvs') == 'nftables'
     - name: Stop etcd
       systemd:
         name: etcd

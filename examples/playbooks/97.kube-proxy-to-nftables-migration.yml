@@ -1,0 +1,101 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+- name: Migrate kube-proxy from IPVS to nftables
+  hosts: master[0]
+  gather_facts: false
+  tasks:
+    - name: Check if already using nftables
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl logs -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null | grep -i 'Using nftables Proxier'"
+      register: nftables_check
+      failed_when: false
+      changed_when: false
+
+    - name: End play if already on nftables
+      ansible.builtin.meta: end_play
+      when: nftables_check.rc == 0
+
+    - name: Verify current kube-proxy mode is IPVS
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl logs -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null | grep -i 'Using ipvs Proxier'"
+      register: ipvs_check
+      failed_when: false
+      changed_when: false
+
+    - name: Fail if kube-proxy is not in IPVS mode
+      ansible.builtin.fail:
+        msg: "kube-proxy is not running in IPVS mode. Cannot migrate."
+      when: ipvs_check.rc != 0
+
+    - name: Patch kube-proxy ConfigMap to nftables mode
+      delegate_to: localhost
+      ansible.builtin.shell: |
+        kubectl get configmap -n kube-system kube-proxy -o yaml --kubeconfig=./{{ admin_kubeconfig_filename }} \
+          | yq '.data."config.conf" |= (from_yaml | .mode = "nftables" | to_yaml)' \
+          | kubectl apply --server-side --force-conflicts --kubeconfig=./{{ admin_kubeconfig_filename }} -f -
+      args:
+        executable: /bin/bash
+      register: configmap_patch
+      changed_when: "'configured' in configmap_patch.stdout"
+
+    - name: Restart kube-proxy DaemonSet
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl rollout restart -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }}"
+
+    - name: Wait for kube-proxy rollout
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl rollout status -n kube-system daemonset/kube-proxy --timeout=300s --kubeconfig=./{{ admin_kubeconfig_filename }}"
+
+    - name: Verify kube-proxy is using nftables
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl logs -n kube-system daemonset/kube-proxy --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null | grep -i 'Using nftables Proxier'"
+      register: nftables_verify
+      retries: 5
+      delay: 10
+      until: nftables_verify.rc == 0
+
+    - name: Check if Calico (Tigera operator) is installed
+      delegate_to: localhost
+      ansible.builtin.shell: "kubectl get installation.operator.tigera.io default -o name --kubeconfig=./{{ admin_kubeconfig_filename }} 2>/dev/null"
+      register: calico_check
+      failed_when: false
+      changed_when: false
+
+    - name: Patch Calico Installation to nftables dataplane
+      delegate_to: localhost
+      ansible.builtin.shell: >
+        kubectl patch installation.operator.tigera.io default --type=merge
+        -p '{"spec":{"calicoNetwork":{"linuxDataplane":"Nftables"}}}'
+        --kubeconfig=./{{ admin_kubeconfig_filename }}
+      when: calico_check.rc == 0
+
+    - name: Wait for cluster to stabilize
+      ansible.builtin.pause:
+        seconds: 15
+
+    # NOTE: in airgapped environments replace
+    # the image with one reachable from the cluster.
+    - name: Validate connectivity
+      delegate_to: localhost
+      ansible.builtin.shell: >
+        kubectl run test-nftables-migration --image=registry.sighup.io/fury/busybox:stable --rm -i --restart=Never --timeout=30s
+        --kubeconfig=./{{ admin_kubeconfig_filename }}
+        -- wget -qO- --timeout=10 -S https://kubernetes.default.svc.cluster.local/healthz --no-check-certificate 2>&1
+      register: connectivity_test
+      retries: 3
+      delay: 10
+      until: connectivity_test.rc == 0
+      failed_when: false
+
+    - name: Final result
+      ansible.builtin.debug:
+        msg: >-
+          {% if connectivity_test.rc == 0 %}
+          Migration successful! kube-proxy is now running in nftables mode.
+          {% else %}
+          WARNING: Migration completed but connectivity test failed. Please verify manually.
+          {% endif %}
+  tags:
+    - migrate-kube-proxy-nftables
