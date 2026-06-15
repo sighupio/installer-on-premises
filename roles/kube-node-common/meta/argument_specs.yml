@@ -1,0 +1,13 @@
+---
+argument_specs:
+  main:
+    short_description: "Common Kubernetes node setup"
+    options:
+      kubernetes_kube_proxy_mode:
+        type: str
+        required: false
+        default: ipvs
+        choices:
+          - ipvs
+          - nftables
+        description: "kube-proxy operating mode"
