@@ -1,3 +1,9 @@
+- name: Assert kubernetes_kube_proxy_mode is valid
+  ansible.builtin.assert:
+    that:
+      - kubernetes_kube_proxy_mode in ['ipvs', 'nftables']
+    fail_msg: "kubernetes_kube_proxy_mode must be 'ipvs' or 'nftables', got: '{{ kubernetes_kube_proxy_mode }}'"
+
 - name: Create Kubernetes PKI directory
   ansible.builtin.file:
     path: /etc/kubernetes/pki
