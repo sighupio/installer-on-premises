@@ -1,6 +1,6 @@
 ---
 kubernetes_version: "1.34.4"
-kubernetes_kube_proxy_mode: "{{ 'nftables' if kubernetes_version is version('1.35.0', '>=') else 'ipvs' }}"
+kubernetes_kube_proxy_mode: "ipvs"
 kubelet_version: "{{ kubernetes_version }}"
 kubectl_version: "{{ kubernetes_version }}"
 kubeadm_version: "{{ kubernetes_version }}"
