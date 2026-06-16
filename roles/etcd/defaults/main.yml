@@ -1,7 +1,7 @@
 ---
 etcd_name: "{{ inventory_hostname }}"
-# check the const SupportedEtcdVersion on this source https://github.com/kubernetes/kubernetes/blob/v1.32.3/cmd/kubeadm/app/constants/constants.go (change the version accordingly)
-etcd_version: v3.5.26 # as indicated here https://etcd.io/docs/v3.6/upgrades/upgrade_3_6/, before upgrading to version 3.6, make sure that all 3.5 members are updated to at least 3.5.26
+# check the const SupportedEtcdVersion on this source https://github.com/kubernetes/kubernetes/blob/v1.35.5/cmd/kubeadm/app/constants/constants.go (change the version accordingly)
+etcd_version: v3.6.6
 
 # Kubeadm binary for dedicated etcd nodes certificate management
 kubeadm_version: "{{ kubernetes_version }}"
