@@ -77,6 +77,8 @@ Whenever a new version of the CIS Kubernetes Benchmark (e.g. `cis-1.12`) is rele
 
 We maintain our `customized configuration` under `utils/kube-bench`, which differs from the upstream rule set by skipping checks that are not applicable in our context. Every deviation from upstream must be documented, including a clear justification for the change.
 
+The `policies` target is not executed. It covers Pod Security Standards and network policy enforcement, which are managed at the distribution level and are out of scope for the on-premises installer benchmark.
+
 To effectively maintain CIS compliance, follow the steps below:
 1. **Monitor for CIS Benchmark and kube-bench updates**: Regularly check for new versions of the CIS Kubernetes Benchmark and the corresponding updates in the kube-bench rule sets.
 2. **Compare upstream configs with our custom rule set**: When a new config version is released in the kube-bench repository, compare it against our current configuration. Identify any new, modified, or removed checks and determine the necessary updates to maintain compliance with the latest CIS version.
