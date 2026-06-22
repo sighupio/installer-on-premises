@@ -12,7 +12,7 @@ Introduced cis-1.12 configuration, based on the upstream kube-bench `cis-1.12` r
 | 1.1.7 / 1.1.8      | Skipped  | No pod specification file for etcd; etcd runs as a systemd service                                                                    |
 | 1.1.9 / 1.1.10     | Changed  | Adjusted to use a custom CNI plugin path (`/var/lib/cni` instead of `/var/lib/cni/networks`)                                          |
 | 1.2.1               | Skipped  | Anonymous authentication is used for metrics scraping and is safe under proper RBAC                                                    |
-| 1.2.11              | Skipped  | `AlwaysPullImages` cannot be enforced by default                                                                                       |
+| 1.2.11              | Skipped  | `AlwaysPullImages` cannot be enforced by default; note that from K8s 1.35 the security concern this check addresses is mitigated by `KubeletEnsureSecretPulledImages` (KEP-2862, default since 1.35) |
 | 3.1.1               | Skipped  | Certificate-based authentication cannot be disabled by default                                                                         |
 | 3.1.3               | Skipped  | Join token usage is limited to initial node bootstrap, making the control non-critical                                                 |
 | 3.2.2               | Skipped  | The default audit policy already satisfies the CIS benchmark requirements                                                              |
@@ -30,7 +30,7 @@ Introduced cis-1.12 configuration, based on the upstream kube-bench `cis-1.12` r
 |---------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------|
 | 1.1.9 / 1.1.10      | Changed  | Adjusted to use a custom CNI plugin path                                                                                               |
 | 1.2.1               | Skipped  | Anonymous authentication is used for metrics scraping and is safe under proper RBAC                                                    |
-| 1.2.11              | Skipped  | `AlwaysPullImages` cannot be enforced by default; CVE-related fix planned for Kubernetes 1.34                                          |
+| 1.2.11              | Skipped  | `AlwaysPullImages` cannot be enforced by default by the installer; from K8s 1.35 the security concern this check addresses is mitigated by `KubeletEnsureSecretPulledImages` (KEP-2862)                                      |
 | 3.1.1               | Skipped  | Certificate-based authentication cannot be disabled by default                                                                         |
 | 3.1.3               | Skipped  | Join token usage is limited to initial node bootstrap, making the control non-critical                                                 |
 | 3.2.2               | Skipped  | The default audit policy already satisfies the CIS benchmark requirements                                                              |
