@@ -50,7 +50,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: approver
-            image: registry.sighup.io/fury/kubelet-csr-approver:v1.0
+            image: {{ kubernetes_image_registry }}/kubelet-csr-approver:v1.0
             imagePullPolicy: IfNotPresent
             command: ["/usr/local/bin/csr-approver.sh"]
             env:
