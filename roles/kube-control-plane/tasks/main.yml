@@ -194,8 +194,8 @@
   ansible.builtin.include_tasks: check_pki_file_permissions.yaml
 
 - name: Ensuring kubelet-csr-approver.yaml file is present
-  ansible.builtin.copy:
-    src: kubelet-csr-approver.yaml
+  ansible.builtin.template:
+    src: kubelet-csr-approver.yaml.j2
     dest: /etc/kubernetes/kubelet-csr-approver.yaml
 
 - name: Apply kubelet-csr-approver CronJob
