@@ -1,21 +1,22 @@
 ---
 haproxy_configuration_file: "haproxy.cfg"
 haproxy_package:
+  # Before upgrading, check the compatibility with Debian and Ubuntu here: https://haproxy.debian.net
   Debian:
-    version: "3.2"
-    name: "haproxy=3.2.*"
+    version: "3.0"
+    name: "haproxy=3.0.*"
   Ubuntu:
-    version: "3.2"
-    name: "haproxy=3.2.*"
+    version: "3.0"
+    name: "haproxy=3.0.*"
   Rocky:
-    version: "32z"
-    name: "haproxy32z"
+    version: "30z"
+    name: "haproxy30z"
   RedHat:
-    name: "haproxy32z"
-    version: "32z"
+    name: "haproxy30z"
+    version: "30z"
   AlmaLinux:
-    name: "haproxy32z"
-    version: "32z"
+    name: "haproxy30z"
+    version: "30z"
 keepalived_cluster: false
 keepalived_interface: "ens192"
 keepalived_on_k8s_master: false
