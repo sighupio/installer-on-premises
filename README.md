@@ -29,9 +29,9 @@ If you are new to SD please refer to the [official documentation][sd-docs] on ho
 The following packages are included in the Fury Kubernetes on-premises module:
 
 | Package                                        | Version  | Description                                                                   |
-| ---------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| ---------------------------------------------- |----------| ----------------------------------------------------------------------------- |
 | [etcd](roles/etcd)                             | `3.6.6`  | Ansible role to install etcd as systemd service                               |
-| [haproxy](roles/haproxy)                       | `3.2`    | Ansible role to install HAProxy as Kubernetes load balancer for the APIServer |
+| [haproxy](roles/haproxy)                       | `3.0`    | Ansible role to install HAProxy as Kubernetes load balancer for the APIServer |
 | [containerd](roles/containerd)                 | `1.7.31` | Ansible role to install containerd as container runtime                       |
 | [kube-node-common](roles/kube-node-common)     | `-`      | Ansible role to install prerequisites for Kubernetes setup                    |
 | [kube-control-plane](roles/kube-control-plane) | `-`      | Ansible role to install control-plane nodes                                   |
