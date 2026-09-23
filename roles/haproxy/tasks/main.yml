@@ -2,29 +2,30 @@
 - name: Update Package Cache
   ansible.builtin.apt:
     update_cache: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install dependencies
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   ansible.builtin.package:
     name:
+      - python3-debian
       - software-properties-common
       - psmisc
     state: latest
 
 - name: Disabling SELinux state
-  when: ansible_os_family in ['RedHat', 'Rocky']
+  when: ansible_facts['os_family'] in ['RedHat', 'Rocky']
   ansible.posix.selinux:
     state: disabled
 
 - name: Disable firewalld
-  when: ansible_os_family in ['RedHat', 'Rocky']
+  when: ansible_facts['os_family'] in ['RedHat', 'Rocky']
   ansible.builtin.systemd:
     name: firewalld
     enabled: false
 
 - name: Stop firewalld
-  when: ansible_os_family in ['RedHat', 'Rocky']
+  when: ansible_facts['os_family'] in ['RedHat', 'Rocky']
   ansible.builtin.systemd:
     name: firewalld
     state: stopped
@@ -39,7 +40,7 @@
 - name: Ensure /etc/yum.repos.d/ exists (RHEL)
   when:
     - not haproxy_self_managed_repositories
-    - ansible_os_family in ['RedHat', 'Rocky']
+    - ansible_facts['os_family'] in ['RedHat', 'Rocky']
   ansible.builtin.file:
     path: /etc/yum.repos.d/
     state: directory
@@ -48,7 +49,7 @@
 - name: Adding Zenetys HAProxy Repo (RHEL)
   when:
     - not haproxy_self_managed_repositories
-    - ansible_os_family in ['RedHat', 'Rocky']
+    - ansible_facts['os_family'] in ['RedHat', 'Rocky']
   ansible.builtin.yum_repository:
     name: zenetys
     description: Zenetys RPM Repo for HAProxy
@@ -58,12 +59,35 @@
 
 # We need to add this repos because the official repo has outdated versions
 # https://github.com/haproxy/wiki/wiki/Packages
+- name: Find legacy HAProxy PPA source files (Ubuntu)
+  when:
+    - not haproxy_self_managed_repositories
+    - ansible_facts['distribution'] == "Ubuntu"
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d
+    patterns: "vbernat-ubuntu-haproxy-*.list"
+  register: haproxy_legacy_ppa_sources
+
+- name: Remove legacy HAProxy PPA source files (Ubuntu)
+  when:
+    - not haproxy_self_managed_repositories
+    - ansible_facts['distribution'] == "Ubuntu"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ haproxy_legacy_ppa_sources.files | default([]) }}"
+
 - name: Adding HAProxy PPA (Ubuntu)
   when:
     - not haproxy_self_managed_repositories
     - ansible_facts['distribution'] == "Ubuntu"
-  ansible.builtin.apt_repository:
-    repo: "ppa:vbernat/haproxy-{{ haproxy_package.Ubuntu.version }}"
+  ansible.builtin.deb822_repository:
+    name: haproxy-ppa
+    types: deb
+    uris: "https://ppa.launchpadcontent.net/vbernat/haproxy-{{ haproxy_package.Ubuntu.version }}/ubuntu"
+    suites: "{{ ansible_facts['distribution_release'] }}"
+    components: main
+    signed_by: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3D653970FBAB0A890E4E4E9A0F14D8B0CF4EFE96"
     state: present
 
 - name: Adding HAProxy Repository (Debian)
@@ -71,6 +95,11 @@
     - not haproxy_self_managed_repositories
     - ansible_facts['distribution'] == "Debian"
   block:
+    - name: Remove legacy HAProxy APT source file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/haproxy.list
+        state: absent
+
     - name: Get repo GPG key
       ansible.builtin.get_url:
         url: https://haproxy.debian.net/bernat.debian.org.gpg
@@ -82,10 +111,14 @@
         creates: /usr/share/keyrings/haproxy.debian.net.gpg
 
     - name: Add repo source to Apt
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/haproxy.debian.net.gpg] http://haproxy.debian.net {{ ansible_distribution_release }}-backports-{{ haproxy_package.Debian.version }} main"
+      ansible.builtin.deb822_repository:
+        name: haproxy
+        types: deb
+        uris: http://haproxy.debian.net
+        suites: "{{ ansible_facts['distribution_release'] }}-backports-{{ haproxy_package.Debian.version }}"
+        components: main
+        signed_by: /usr/share/keyrings/haproxy.debian.net.gpg
         state: present
-        filename: haproxy
 
 - name: Install HAProxy
   ansible.builtin.package:

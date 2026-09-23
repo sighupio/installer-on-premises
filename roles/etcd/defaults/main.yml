@@ -14,7 +14,7 @@ etcd_data_dir: /var/lib/etcd
 etcd_binary_dir: /usr/local/bin
 etcd_config_dir: /etc/etcd
 etcd_certs_dir: /etc/etcd/pki
-etcd_address: "{{ ansible_default_ipv4.address }}"
+etcd_address: "{{ ansible_facts['default_ipv4'].address }}"
 etcd_initial_cluster: "https://localhost:2380"
 etcd_initial_cluster_state: "new"
 etcd_client_address: 127.0.0.1
