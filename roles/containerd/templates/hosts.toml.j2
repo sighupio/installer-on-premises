@@ -1,0 +1,17 @@
+# The hosts below are tried in the order listed and, once they have all been
+# tried, containerd falls back to the registry itself. That fallback cannot be
+# disabled from this file: an empty server is treated as unset and is replaced
+# with the image's own registry host namespace, see the handling of an empty
+# host in core/remotes/docker/config/hosts.go. The settings outside the host
+# blocks configure that upstream registry.
+# For details on the configuration possible in this file, see:
+# https://github.com/containerd/containerd/blob/main/docs/hosts.md
+skip_verify = {{ item.insecure_skip_verify | default(false) | bool | lower }}
+
+{% if item.mirror_endpoint is defined %}
+{% for endpoint in item.mirror_endpoint %}
+[host."{{ endpoint }}"]
+  capabilities = ["pull", "resolve"]
+  skip_verify = {{ item.insecure_skip_verify | default(false) | bool | lower }}
+{% endfor %}
+{% endif %}

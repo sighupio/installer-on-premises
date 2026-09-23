@@ -10,21 +10,14 @@
 
 - name: Renew `super-admin.conf` certificate
   ansible.builtin.command: "kubeadm certs renew super-admin.conf"
-  when: kubernetes_version is version('1.29.0', 'ge', version_type='semver')
-
-- name: Upgrade kubernetes master with kubeadm (legacy)
-  ansible.builtin.command: "kubeadm upgrade apply --config {{ kubeadm_config_file }} -y --patches {{ kubeadm_patches_path }}"
-  when: kubernetes_version is version('1.30.0', 'lt', version_type='semver')
 
 - name: Ensuring kubeadm-upgrade-config.yml config file is present on machine
   ansible.builtin.template:
     src: kubeadm-upgrade-config.yml.j2
     dest: "{{ kubeadm_upgrade_config_file }}"
-  when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')
 
 - name: Upgrade kubernetes master with kubeadm
-  ansible.builtin.command: kubeadm upgrade apply --config /etc/kubernetes/kubeadm-upgrade-config.yml
-  when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')
+  ansible.builtin.command: kubeadm upgrade apply --config {{ kubeadm_upgrade_config_file }}
 
 - name: Generate KubeletConfiguration patches file from template
   ansible.builtin.template:
@@ -36,4 +29,3 @@
     - Apply kubelet-config patches
     - Restart kubelet
     - Kubelet verifications
-  when: kubernetes_version is version('1.30.0', 'ge', version_type='semver')

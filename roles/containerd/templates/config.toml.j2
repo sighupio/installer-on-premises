@@ -1,66 +1,77 @@
-version = 2
-root = "{{ containerd_storage_dir }}"
-state = "{{ containerd_state_dir }}"
+version = 4
+root = '{{ containerd_storage_dir }}'
+state = '{{ containerd_state_dir }}'
 oom_score = {{ containerd_oom_score }}
 
-[grpc]
-  max_recv_message_size = {{ containerd_grpc_max_recv_message_size | default(16777216) }}
-  max_send_message_size = {{ containerd_grpc_max_send_message_size | default(16777216) }}
-
 [debug]
-  level = "{{ containerd_debug_level | default('info') }}"
+  level = '{{ containerd_debug_level | default('info') }}'
 
-[metrics]
-  address = "{{ containerd_metrics_address | default('') }}"
-  grpc_histogram = {{ containerd_metrics_grpc_histogram | default(false) | lower }}
-
+# In version 4 the server settings live under their own plugins: the top level
+# grpc and metrics sections are deprecated and, since no migration runs on a
+# config that already declares version 4, they would be read and then silently
+# dropped.
 [plugins]
-  [plugins."io.containerd.grpc.v1.cri"]
-    sandbox_image = "{{ versions[kubernetes_version].sandbox_image }}"
-    max_container_log_line_size = {{ containerd_max_container_log_line_size }}
-    device_ownership_from_security_context = {{ containerd_device_ownership_from_security_context | string | lower }}
-    [plugins."io.containerd.grpc.v1.cri".containerd]
-      default_runtime_name = "{{ 'nvidia' if containerd_nvidia_enabled else 'runc' }}"
-      snapshotter = "{{ containerd_snapshotter | default('overlayfs') }}"
-      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
-{% if containerd_nvidia_enabled %}  {# Default runtime = nvidia #}
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
-          runtime_type = "io.containerd.runc.v2"
-          runtime_engine = ""
-          runtime_root = ""
-          privileged_without_host_devices = false
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
-            BinaryName = "/usr/bin/nvidia-container-runtime"
-            SystemdCgroup = true
-{% endif %} {# Default runtime = runc #}
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-          runtime_type = "io.containerd.runc.v2"
-          runtime_engine = ""
-          runtime_root = ""
-          privileged_without_host_devices = false
-          base_runtime_spec = ""
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
-            SystemdCgroup = true
-    [plugins."io.containerd.grpc.v1.cri".registry]
+  [plugins.'io.containerd.server.v1.grpc']
+    max_recv_message_size = {{ containerd_grpc_max_recv_message_size | default(16777216) }}
+    max_send_message_size = {{ containerd_grpc_max_send_message_size | default(16777216) }}
+
+  [plugins.'io.containerd.server.v1.metrics']
+    address = '{{ containerd_metrics_address | default('') }}'
+
+  [plugins.'io.containerd.metrics.v1.grpc-prometheus']
+    grpc_histogram = {{ containerd_metrics_grpc_histogram | default(false) | lower }}
+
+  [plugins.'io.containerd.cri.v1.images']
+    snapshotter = '{{ containerd_snapshotter | default('overlayfs') }}'
+    disable_snapshot_annotations = true
+    discard_unpacked_layers = false
+    max_concurrent_downloads = 3
+    concurrent_layer_fetch_buffer = 0
+    image_pull_progress_timeout = '5m0s'
+    image_pull_with_sync_fs = false
+    stats_collect_period = 10
+    use_local_image_pull = false
+
+    [plugins.'io.containerd.cri.v1.images'.pinned_images]
+      sandbox = '{{ versions[kubernetes_version].sandbox_image }}'
+
+    [plugins.'io.containerd.cri.v1.images'.registry]
+      config_path = '/etc/containerd/certs.d'
     {% if containerd_registry_configs -%}
-      [plugins."io.containerd.grpc.v1.cri".registry.configs]
+      [plugins.'io.containerd.cri.v1.images'.registry.configs]
       {% for registry_config in containerd_registry_configs -%}
         {% if registry_config.username is defined and registry_config.password is defined -%}
-        [plugins."io.containerd.grpc.v1.cri".registry.configs."{{registry_config.registry}}".auth]
-          auth = "{{(registry_config.username + ":" + registry_config.password) | b64encode}}"
-        {% endif -%}
-        {% if registry_config.insecure_skip_verify is defined and registry_config.insecure_skip_verify -%}
-        [plugins."io.containerd.grpc.v1.cri".registry.configs."{{registry_config.registry}}".tls]
-          insecure_skip_verify = true
+        [plugins.'io.containerd.cri.v1.images'.registry.configs.'{{registry_config.registry}}'.auth]
+          auth = '{{(registry_config.username + ':' + registry_config.password) | b64encode}}'
         {% endif -%}
       {% endfor -%}
-    {% endif -%}
-      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-        {% if containerd_registry_configs -%}
-          {% for registry_config in containerd_registry_configs -%}
-            {% if registry_config.mirror_endpoint is defined -%}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{registry_config.registry}}"]
-          endpoint = {{ registry_config.mirror_endpoint }}
-            {% endif -%}
-          {% endfor -%}
-        {% endif -%}
+    {% endif %}
+
+    [plugins.'io.containerd.cri.v1.images'.image_decryption]
+      key_model = 'node'
+
+  [plugins.'io.containerd.cri.v1.runtime']
+    max_container_log_line_size = {{ containerd_max_container_log_line_size }}
+    device_ownership_from_security_context = {{ containerd_device_ownership_from_security_context | string | lower }}
+
+    [plugins.'io.containerd.cri.v1.runtime'.containerd]
+      default_runtime_name = "{{ 'nvidia' if containerd_nvidia_enabled else 'runc' }}"
+
+      [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes]
+{% if containerd_nvidia_enabled %}
+        [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.nvidia]
+          runtime_type = 'io.containerd.runc.v2'
+          privileged_without_host_devices = false
+
+          [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.nvidia.options]
+            BinaryName = '/usr/bin/nvidia-container-runtime'
+            SystemdCgroup = true
+{% endif %}
+        [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc]
+          runtime_type = 'io.containerd.runc.v2'
+          privileged_without_host_devices = false
+          base_runtime_spec = ''
+          snapshotter = '{{ containerd_snapshotter | default('overlayfs') }}'
+
+          [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]
+            SystemdCgroup = true

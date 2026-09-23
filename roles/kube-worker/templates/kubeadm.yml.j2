@@ -1,4 +1,4 @@
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: JoinConfiguration
 discovery:
   bootstrapToken:
@@ -9,8 +9,10 @@ discovery:
 nodeRegistration:
   name: {{ kubernetes_hostname }}
   kubeletExtraArgs:
-    cloud-provider: {{ kubernetes_cloud_provider }}
-    node-labels: "node.kubernetes.io/role={{ kubernetes_role}}"
+    - name: cloud-provider
+      value: {{ kubernetes_cloud_provider | to_json }}
+    - name: node-labels
+      value: {{ ('node.kubernetes.io/role=' ~ kubernetes_role) | to_json }}
 {% if kubernetes_taints | length > 0 %}
   taints:
 {{ kubernetes_taints | to_nice_yaml | indent(4, true) }}
