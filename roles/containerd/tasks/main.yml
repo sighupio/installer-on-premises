@@ -17,9 +17,9 @@
 
 - name: Fail containerd setup if distribution is not supported
   fail:
-    msg: "{{ ansible_distribution }} is not supported by containerd."
+    msg: "{{ ansible_facts['distribution'] }} is not supported by containerd."
   when:
-    - ansible_distribution not in ["CentOS", "OracleLinux", "RedHat", "Ubuntu", "Debian", "Rocky", "AlmaLinux"]
+    - ansible_facts['distribution'] not in ["CentOS", "OracleLinux", "RedHat", "Ubuntu", "Debian", "Rocky", "AlmaLinux"]
 
 - name: containerd | Download containerd
   get_url:

@@ -24,14 +24,14 @@ vrrp_script check_haproxy {
 }
 
 vrrp_instance VI_1 {
-    state {% if ansible_hostname.endswith('1') %}MASTER{% else %}BACKUP{% endif %}
+    state {% if ansible_facts['hostname'].endswith('1') %}MASTER{% else %}BACKUP{% endif %}
     interface {{ keepalived_interface }}
     virtual_router_id {{ keepalived_virtual_router_id }}
-    priority {% if ansible_hostname.endswith('1') %}101{% else %}100{% endif %}
+    priority {% if ansible_facts['hostname'].endswith('1') %}101{% else %}100{% endif %}
 
     unicast_peer {
         {% for host in ansible_play_batch %}
-        {% if hostvars[host]['ansible_host'] not in ansible_all_ipv4_addresses %}
+        {% if hostvars[host]['ansible_host'] not in ansible_facts['all_ipv4_addresses'] %}
         {{ hostvars[host]['ansible_host']  }}
         {% endif %}
         {% endfor %}

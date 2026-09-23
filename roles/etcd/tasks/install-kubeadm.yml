@@ -4,14 +4,14 @@
     name: firewalld
     enabled: false
   ignore_errors: true
-  when: ansible_os_family in ['RedHat', 'Rocky']
+  when: ansible_facts['os_family'] in ['RedHat', 'Rocky']
 
 - name: Be sure firewalld is stopped
   ansible.builtin.systemd:
     name: firewalld
     state: stopped
   ignore_errors: true
-  when: ansible_os_family in ['RedHat', 'Rocky']
+  when: ansible_facts['os_family'] in ['RedHat', 'Rocky']
 
 - name: Download kubeadm binary
   ansible.builtin.get_url:

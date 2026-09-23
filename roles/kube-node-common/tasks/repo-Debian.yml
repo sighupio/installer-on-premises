@@ -1,22 +1,15 @@
 ---
-- name: Remove deprecated Kubernetes APT repository (apt-key method)
-  apt_repository:
-    filename: "{{ kubernetes_repo_deprecated['name'] }}"
-    repo: "{{ kubernetes_repo_deprecated['apt_repo'] }}"
-    state: absent
-  when: (ansible_distribution == 'Debian' and ansible_distribution_major_version | int <= 12) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int < 24)
-
-- name: Remove deprecated Kubernetes APT repository file (signed-by method)
+- name: Remove deprecated Kubernetes APT repository file
   ansible.builtin.file:
     path: "/etc/apt/sources.list.d/{{ kubernetes_repo_deprecated['name'] }}.list"
     state: absent
-  when: (ansible_distribution == 'Debian' and ansible_distribution_major_version | int >= 13) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 24)
 
-- name: Install apt-transport-https and gnupg
-  apt:
-    pkg: 
-    - apt-transport-https
-    - gnupg
+- name: Install APT repository dependencies
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - gnupg
+      - python3-debian
     state: latest
 
 - name: Add Kubernetes APT repository
@@ -27,6 +20,7 @@
     apt_sources_dir: "/etc/apt/sources.list.d" # use default apt sources path
     filename: "{{ dependencies_override.apt.name | default('kfd-repos') }}"
     repo: "{{ dependencies_override.apt.repo | default(dependencies[kubernetes_version].apt.repo) }}"
+    repo_parts: "{{ repo | regex_replace('^(deb\\s+)?(\\[[^]]+\\]\\s+)?', '') | split }}"
   block:
     - name: Remove old repositories
       loop: "{{ dependencies.keys() }}"
@@ -36,10 +30,11 @@
       when: dependencies[item].apt is defined and dependencies[item].apt.name is defined
 
     - name: Remove old APT signing key (apt-key method)
-      ansible.builtin.apt_key:
-        id: "{{ gpg_key_id }}"
-        state: absent
-      when: (ansible_distribution == 'Debian' and ansible_distribution_major_version | int <= 12) or (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int < 24)
+      ansible.builtin.command: "apt-key del {{ gpg_key_id }}"
+      register: remove_old_apt_signing_key
+      changed_when: remove_old_apt_signing_key.rc == 0
+      failed_when: remove_old_apt_signing_key.rc not in [0, 1, 2]
+      when: (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_major_version'] | int <= 12) or (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version'] | int < 24)
 
     - name: Ensure keyring directory exists
       file:
@@ -61,19 +56,16 @@
             cmd: "gpg --dearmor -o {{ gpg_keyrings_path }}/kubernetes-apt-keyring.gpg < /tmp/kubernetes-apt-keyring.gpg.armored"
 
     - name: Add Kubernetes APT repository to APT sources
-      ansible.builtin.apt_repository:
-        filename: "{{ filename }}"
-
-        # syntax: "[type] [signature] <url> <suite> [component]"
-        # examples:
-        # - "deb https://my-repo.example.com/deb/ /"
-        # - "http://my-repo.example.com oracular main"
-
-        # NB: we closely follow the recommended installation instructions provided by Kubernetes:
-        #     https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
-        # NB: the only allowed [type] is "deb". Anything else is discarded and replaced with "deb"
-        # NB: the [signature] value is currently ignored and statically replaced with "/etc/apt/keyrings/kubernetes-apt-keyring.gpg"
-        repo: "{{ repo | regex_replace('^(?P<type>deb)?\\ ?(?P<signature>\\[signed-by=\\S+\\])?\\ ?(?P<url>https?://\\S+)\\ (?P<suite>\\S+)\\ ?(?P<component>\\S+)?$', 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \\g<url> \\g<suite> \\g<component>') }}"
+      ansible.builtin.deb822_repository:
+        name: "{{ filename }}"
+        types:
+          - deb
+        uris:
+          - "{{ repo_parts[0] }}"
+        suites:
+          - "{{ repo_parts[1] }}"
+        components: "{{ repo_parts[2:] }}"
+        signed_by: "{{ gpg_keyrings_path }}/kubernetes-apt-keyring.gpg"
         state: present
 
     - name: Add disclaimer in repository file
@@ -85,7 +77,7 @@
         marker: "##### KFD MANAGED FILE {mark} #####"
         marker_begin: "- DISCLAIMER START"
         marker_end: "- DISCLAIMER END"
-        path: "{{ apt_sources_dir }}/{{ filename }}.list"
+        path: "{{ apt_sources_dir }}/{{ filename }}.sources"
 
     - name: Update APT cache
       apt:
