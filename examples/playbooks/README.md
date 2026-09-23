@@ -88,6 +88,8 @@ In this step you can choose which container runtime you want to use:
 
 #### Containerd
 
+Kubernetes 1.36 ships with containerd 2.x, so the same playbooks also upgrade the container runtime across a major version. Nothing changes in the procedure.
+
 Run the `1.containerd.yml` playbook with:
 
 ```bash
