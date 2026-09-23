@@ -3,7 +3,8 @@
 
 # Check supported Kubernetes versions here: https://containerd.io/releases/#kubernetes-support
 containerd_version: "{{ versions[kubernetes_version].containerd_version }}"
-containerd_download_url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ host_architecture }}.tar.gz"
+# From 2.3 upstream builds the archive dynamically linked with glibc 2.35 and expects the static one on distributions that do not have glibc >= 2.35: https://github.com/containerd/containerd/releases/tag/v2.3.5
+containerd_download_url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/{{ 'containerd-static' if containerd_version is version('2.3.0', 'ge') else 'containerd' }}-{{ containerd_version }}-linux-{{ host_architecture }}.tar.gz"
 containerd_bin_dir: "/usr/local/bin"
 # runc version from here: https://github.com/containerd/containerd/blob/main/docs/RUNC.md -> https://github.com/containerd/containerd/blob/main/script/setup/runc-version
 runc_version: "{{ versions[kubernetes_version].runc_version }}"
@@ -12,45 +13,11 @@ runc_download_url: "https://github.com/opencontainers/runc/releases/download/{{ 
 runc_checksum: "sha256:https://github.com/opencontainers/runc/releases/download/{{ versions[kubernetes_version].runc_version }}/runc.sha256sum"
 
 # Customize versions based on Kubernetes version to maintain compatibility
-kubernetes_version: "1.35.5"
+kubernetes_version: "1.36.4"
 # Resgistry where to pull the pause (sandbox) image. We use the same name used in other roles for simplicity.
 # Upstream registry is "k8s.gcr.io"
 kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-
-# Due to this CVE https://nvd.nist.gov/vuln/detail/CVE-2025-31133
-# we must update to one of the following versions of runc: 1.2.8 or 1.3.3
 versions:
-  1.28.7:
-    containerd_version: "1.7.13"
-    runc_version: "v1.1.12"
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.2" # using 3.2 because we had it hardcoded before.
-  1.28.15:
-    containerd_version: "1.7.13"
-    runc_version: "v1.1.12"
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.2" # using 3.2 because we had it hardcoded before.
-  1.29.3:
-    containerd_version: "1.7.13"
-    runc_version: "v1.1.12"
-    # containerd defaults to `pause:3.8` for version 1.7.13, see:
-    # https://github.com/containerd/containerd/blob/v1.7.13/pkg/cri/config/config_unix.go#L96
-    # but `kubeadm config images list` (for kubeadm v1.29.3) points to pause:3.9, (or https://github.com/kubernetes/kubernetes/blob/v1.29.3/cmd/kubeadm/app/constants/constants.go)
-    # so prefering that version because:
-    #   1. kubeadm will pull this image anyway when initiating
-    #   2. kubeadm will instruct the kubelet that this image should not be garbage collected.
-    #   Ref: https://github.com/kubernetes/kubeadm/issues/2020
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.9"
-  1.29.10:
-    containerd_version: "1.7.23"
-    runc_version: "v1.1.14" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.23/script/setup/runc-version
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.9"
-  1.30.6:
-    containerd_version: "1.7.23"
-    runc_version: "v1.1.14" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.23/script/setup/runc-version
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.9"
-  1.30.11:
-    containerd_version: "1.7.23"
-    runc_version: "v1.1.14" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.23/script/setup/runc-version
-    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.9"
   1.31.4:
     containerd_version: "1.7.23"
     runc_version: "v1.1.14" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.23/script/setup/runc-version
@@ -99,10 +66,22 @@ versions:
     containerd_version: "1.7.29"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
     runc_version: "v1.3.3" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.29/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.1" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.34.8/cmd/kubeadm/app/constants/constants.go
+  1.34.11:
+    containerd_version: "1.7.35"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
+    runc_version: "v1.3.6" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.35/script/setup/runc-version
+    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.1" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.34.11/cmd/kubeadm/app/constants/constants.go
   1.35.5:
     containerd_version: "1.7.31"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
     runc_version: "v1.3.5" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.31/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.1" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.35.5/cmd/kubeadm/app/constants/constants.go
+  1.35.8:
+    containerd_version: "1.7.35"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
+    runc_version: "v1.3.6" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.35/script/setup/runc-version
+    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.1" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.35.8/cmd/kubeadm/app/constants/constants.go
+  1.36.4:
+    containerd_version: "2.3.5"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
+    runc_version: "v1.5.1" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v2.3.5/script/setup/runc-version
+    sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.2" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.36.4/cmd/kubeadm/app/constants/constants.go
 
 # Service options.
 containerd_service_state: started
@@ -158,6 +137,13 @@ containerd_nvidia_enabled: false
 # automatically authenticate against them when pulling the images.
 # Notice that this will be deprecated in containerd v2:
 # https://github.com/containerd/containerd/blob/v1.7.0/docs/cri/registry.md#configure-registry-credentials
-containerd_registry_configs:
-# configuration must use the following format:
-#   - {registry: "myregistry:8080", username: "admin", password: "password", insecure_skip_verify=false, mirror_endpoint: ["http://myregistry:8080"]}
+containerd_registry_configs: []
+# on containerd 1.x configuration must use the following format:
+#   - {registry: "myregistry:8080", username: "admin", password: "password", insecure_skip_verify: false, mirror_endpoint: ["http://myregistry:8080"]}
+# on containerd 2.x configuration must use:
+# - registry: "upstream-registry.example.com"
+#   username: "admin"
+#   password: "password"
+#   insecure_skip_verify: true
+#   mirror_endpoint:
+#   - "http://myregistry:8080"

@@ -110,11 +110,61 @@
 
 - name: Configure containerd with template containerd config file
   template:
-    src: config.toml.j2
+    src: "{{ 'config.toml.j2' if containerd_version is version('2.0.0', 'ge') else 'config-v1.toml.j2' }}"
     dest: "{{ containerd_cfg_dir }}/config.toml"
     owner: "root"
     mode: 0640
   notify: restart containerd
+
+# containerd 2.x reads registry credentials and mirrors from certs.d/hosts.toml
+- name: Ensure the containerd registry configuration directory exists
+  ansible.builtin.file:
+    path: "{{ containerd_cfg_dir }}/certs.d"
+    owner: root
+    group: root
+    mode: "0755"
+    state: directory
+  when: containerd_version is version('2.0.0', 'ge')
+
+- name: List existing containerd registry configuration directories
+  ansible.builtin.find:
+    paths:
+      - "{{ containerd_cfg_dir }}/certs.d/"
+    recurse: false
+    file_type: directory
+  register: containerd_current_registry_config_directories
+  when: containerd_version is version('2.0.0', 'ge')
+
+- name: Ensure desired containerd registry configuration directories exist
+  ansible.builtin.file:
+    path: "{{ containerd_cfg_dir }}/certs.d/{{ item.registry }}"
+    owner: root
+    mode: "0700"
+    state: directory
+  loop: "{{ (containerd_registry_configs or []) if containerd_version is version('2.0.0', 'ge') else [] }}"
+  no_log: true
+  when: containerd_version is version('2.0.0', 'ge')
+  register: containerd_desired_registry_config_dirs
+
+- name: Write containerd registry configuration files
+  ansible.builtin.template:
+    src: hosts.toml.j2
+    dest: "{{ containerd_cfg_dir }}/certs.d/{{ item.registry }}/hosts.toml"
+    owner: root
+    mode: "0640"
+  loop: "{{ (containerd_registry_configs or []) if containerd_version is version('2.0.0', 'ge') else [] }}"
+  no_log: true
+  when: containerd_version is version('2.0.0', 'ge')
+
+- name: Remove unneeded containerd registry configuration directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  vars:
+    existing_dirs: "{{ containerd_current_registry_config_directories.files | default([]) | map(attribute='path') | list }}"
+    keep_dirs: "{{ containerd_desired_registry_config_dirs.results | default([]) | map(attribute='path') | list }}"
+  loop: "{{ existing_dirs | difference(keep_dirs) }}"
+  when: containerd_version is version('2.0.0', 'ge')
 
 - name: Update modprobe entries
   ini_file:
