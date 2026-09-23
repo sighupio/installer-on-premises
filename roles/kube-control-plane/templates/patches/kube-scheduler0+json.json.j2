@@ -1,5 +1,5 @@
 [
-{'op': 'add', 'path': '/spec/containers/0/command/-', 'value': '--bind-address={{ ansible_default_ipv4.address }}'},
-{'op': 'replace', 'path': '/spec/containers/0/startupProbe/httpGet/host', 'value': '{{ ansible_default_ipv4.address }}'},
-{'op': 'replace', 'path': '/spec/containers/0/livenessProbe/httpGet/host', 'value': '{{ ansible_default_ipv4.address }}'}
+{'op': 'add', 'path': '/spec/containers/0/command/-', 'value': '--bind-address={{ ansible_facts['default_ipv4'].address }}'},
+{'op': 'replace', 'path': '/spec/containers/0/startupProbe/httpGet/host', 'value': '{{ ansible_facts['default_ipv4'].address }}'},
+{'op': 'replace', 'path': '/spec/containers/0/livenessProbe/httpGet/host', 'value': '{{ ansible_facts['default_ipv4'].address }}'}
 ]

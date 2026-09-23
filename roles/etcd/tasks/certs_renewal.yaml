@@ -5,14 +5,14 @@
 
 - name: Ensure etcd backup directory exists
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/certs-backup/{{ backup_timestamp }}/etc-etcd-pki"
+    path: "{{ ansible_facts['env']['HOME'] }}/certs-backup/{{ backup_timestamp }}/etc-etcd-pki"
     state: directory
     mode: '0750'
 
 - name: Backup etcd certificates
   ansible.builtin.copy:
     src: "{{ etcd_certs_dir }}/"
-    dest: "{{ ansible_env.HOME }}/certs-backup/{{ backup_timestamp }}/etc-etcd-pki"
+    dest: "{{ ansible_facts['env']['HOME'] }}/certs-backup/{{ backup_timestamp }}/etc-etcd-pki"
     remote_src: true
     mode: '0600'
 
