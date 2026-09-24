@@ -4,6 +4,29 @@
     path: "/etc/apt/sources.list.d/{{ kubernetes_repo_deprecated['name'] }}.list"
     state: absent
 
+- name: Find deprecated external APT repository files on Debian 13+
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d
+    patterns:
+      - haproxy.list
+      - haproxy.sources
+    contains: ".*https?://haproxy\\.debian\\.net.*"
+  register: obsolete_haproxy_apt_repositories
+  when:
+    - not (haproxy_self_managed_repositories | default(false) | bool)
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version'] | int >= 13
+
+- name: Remove deprecated external APT repository files on Debian 13+
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ obsolete_haproxy_apt_repositories.files | default([]) }}"
+  when:
+    - not (haproxy_self_managed_repositories | default(false) | bool)
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version'] | int >= 13
+
 - name: Install APT repository dependencies
   ansible.builtin.apt:
     pkg:
