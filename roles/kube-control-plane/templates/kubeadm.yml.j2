@@ -78,6 +78,11 @@ apiServer:
       value: {{ kubernetes_remote_encryption_config | to_json }}
 {% endif %}
 {% if oidc_issuer_url != "" %}
+{% if oidc_extra_audiences | default([]) | length > 0 %}
+{# kube-apiserver rejects --authentication-config combined with any --oidc-* flag. #}
+    - name: authentication-config
+      value: {{ kubernetes_remote_authentication_config | to_json }}
+{% else %}
     - name: oidc-issuer-url
       value: {{ oidc_issuer_url | to_json }}
     - name: oidc-client-id
@@ -92,6 +97,7 @@ apiServer:
       value: {{ oidc_groups_claim | to_json }}
     - name: oidc-groups-prefix
       value: {{ oidc_groups_prefix | to_json }}
+{% endif %}
 {% endif %}
 {% if service_account_issuer is defined %}
     - name: service-account-issuer
@@ -123,6 +129,13 @@ apiServer:
   - name: encryption-configuration
     hostPath: {{ kubernetes_remote_encryption_config }}
     mountPath: {{ kubernetes_remote_encryption_config }}
+    readOnly: true
+    pathType: File
+{% endif %}
+{% if oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0 %}
+  - name: authentication-config
+    hostPath: {{ kubernetes_remote_authentication_config }}
+    mountPath: {{ kubernetes_remote_authentication_config }}
     readOnly: true
     pathType: File
 {% endif %}

@@ -1,0 +1,20 @@
+# Structured-authentication equivalent of the legacy --oidc-* flags, rendered only when
+# oidc_extra_audiences is non-empty (see kubeadm.yml.j2 and defaults/main.yml).
+apiVersion: apiserver.config.k8s.io/v1
+kind: AuthenticationConfiguration
+jwt:
+  - issuer:
+      url: {{ oidc_issuer_url | to_json }}
+      audiences:
+        - {{ oidc_client_id | to_json }}
+{% for audience in oidc_extra_audiences %}
+        - {{ audience | to_json }}
+{% endfor %}
+      audienceMatchPolicy: MatchAny
+    claimMappings:
+      username:
+        claim: {{ oidc_username_claim | to_json }}
+        prefix: {{ (oidc_username_prefix if oidc_username_prefix != "-" else "") | to_json }}
+      groups:
+        claim: {{ oidc_groups_claim | to_json }}
+        prefix: {{ (oidc_groups_prefix if oidc_groups_prefix != "-" else "") | to_json }}
