@@ -3,7 +3,7 @@
 
 # Check supported Kubernetes versions here: https://containerd.io/releases/#kubernetes-support
 containerd_version: "{{ versions[kubernetes_version].containerd_version }}"
-# From 2.3 upstream builds the archive dynamically linked with glibc 2.35 and expects the static one on distributions that do not have glibc >= 2.35: https://github.com/containerd/containerd/releases/tag/v2.3.5
+# From 2.3 upstream builds the archive dynamically linked with glibc 2.35 and expects the static one on distributions that do not have glibc >= 2.35: https://github.com/containerd/containerd/releases/tag/v2.3.6
 containerd_download_url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/{{ 'containerd-static' if containerd_version is version('2.3.0', 'ge') else 'containerd' }}-{{ containerd_version }}-linux-{{ host_architecture }}.tar.gz"
 containerd_bin_dir: "/usr/local/bin"
 # runc version from here: https://github.com/containerd/containerd/blob/main/docs/RUNC.md -> https://github.com/containerd/containerd/blob/main/script/setup/runc-version
@@ -79,8 +79,8 @@ versions:
     runc_version: "v1.3.6" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v1.7.35/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.1" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.35.8/cmd/kubeadm/app/constants/constants.go
   1.36.4:
-    containerd_version: "2.3.5"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
-    runc_version: "v1.5.1" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v2.3.5/script/setup/runc-version
+    containerd_version: "2.3.6"  # use this link to know which version of containerd is needed https://containerd.io/releases/#kubernetes-support
+    runc_version: "v1.5.1" # use this link (with the correct tag) to know which version of runc is needed https://github.com/containerd/containerd/blob/v2.3.6/script/setup/runc-version
     sandbox_image: "{{ kubernetes_image_registry }}/pause:3.10.2" # use this link to know which version of pause is needed https://github.com/kubernetes/kubernetes/blob/v1.36.4/cmd/kubeadm/app/constants/constants.go
 
 # Service options.
