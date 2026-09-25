@@ -47,6 +47,19 @@
     dest: "{{ kubernetes_remote_encryption_config }}"
   when: kubernetes_encryption_config != ""
 
+- name: Load OIDC CA certificate content
+  ansible.builtin.slurp:
+    src: "{{ oidc_ca_file }}"
+  register: oidc_ca_content
+  when: oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0
+
+- name: Ensuring authentication config is present on machine
+  ansible.builtin.template:
+    src: authentication-config.yml.j2
+    dest: "{{ kubernetes_remote_authentication_config }}"
+  when: oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0
+  register: authentication_config_template
+
 - name: Ensuring kubeadm.yml config file is present on machine
   ansible.builtin.template:
     src: kubeadm.yml.j2
@@ -108,7 +121,7 @@
   ansible.builtin.include_tasks: reconfigure-kube-star-components.yml
   when:
     - super_admin_conf_stat_result.stat.exists or admin_conf_stat_result.stat.exists
-    - kubeadm_template.changed
+    - kubeadm_template.changed or (authentication_config_template.changed | default(false))
 
 - name: Initializing master
   ansible.builtin.command: "kubeadm init --config={{ kubeadm_config_file }}"
