@@ -1,7 +1,7 @@
 ---
 etcd_name: "{{ inventory_hostname }}"
 # Constants: https://github.com/kubernetes/kubernetes/blob/v1.36.4/cmd/kubeadm/app/constants/constants.go
-etcd_version: v3.6.14
+etcd_version: v3.6.15
 
 # Kubeadm binary for dedicated etcd nodes certificate management
 kubeadm_version: "{{ kubernetes_version }}"
