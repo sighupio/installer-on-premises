@@ -47,6 +47,12 @@
     dest: "{{ kubernetes_remote_encryption_config }}"
   when: kubernetes_encryption_config != ""
 
+- name: Load OIDC CA certificate content
+  ansible.builtin.slurp:
+    src: "{{ oidc_ca_file }}"
+  register: oidc_ca_content
+  when: oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0
+
 - name: Ensuring authentication config is present on machine
   ansible.builtin.template:
     src: authentication-config.yml.j2

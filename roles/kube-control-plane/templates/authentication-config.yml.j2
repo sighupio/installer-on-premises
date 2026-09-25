@@ -5,6 +5,7 @@ kind: AuthenticationConfiguration
 jwt:
   - issuer:
       url: {{ oidc_issuer_url | to_json }}
+      certificateAuthority: {{ oidc_ca_content.content | b64decode | to_json }}
       audiences:
         - {{ oidc_client_id | to_json }}
 {% for audience in oidc_extra_audiences %}
