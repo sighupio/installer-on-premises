@@ -56,7 +56,7 @@ oidc_groups_prefix: "oidc:"
 # Additional accepted token audiences besides oidc_client_id; switches the apiserver from the
 # legacy --oidc-* flags to --authentication-config when is not empty.
 oidc_extra_audiences: []
-kubernetes_remote_authentication_config: /etc/kubernetes/authentication-config.yaml
+kubernetes_remote_authentication_config: /etc/kubernetes/oidc/authentication-config.yaml
 
 upgrade: False
 

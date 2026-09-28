@@ -53,12 +53,23 @@
   register: oidc_ca_content
   when: oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0
 
+# A bind mount of a file stays pinned to its old inode when this task replaces it, so the
+# container never sees later changes. Mounting the directory avoids that.
+# Kubernetes uses the same trick for ConfigMap and Secret volumes.
+- name: Ensuring dedicated OIDC config directory exists
+  ansible.builtin.file:
+    path: "{{ kubernetes_remote_authentication_config | dirname }}"
+    owner: root
+    group: root
+    mode: "0755"
+    state: directory
+  when: oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0
+
 - name: Ensuring authentication config is present on machine
   ansible.builtin.template:
     src: authentication-config.yml.j2
     dest: "{{ kubernetes_remote_authentication_config }}"
   when: oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0
-  register: authentication_config_template
 
 - name: Ensuring kubeadm.yml config file is present on machine
   ansible.builtin.template:
@@ -121,7 +132,7 @@
   ansible.builtin.include_tasks: reconfigure-kube-star-components.yml
   when:
     - super_admin_conf_stat_result.stat.exists or admin_conf_stat_result.stat.exists
-    - kubeadm_template.changed or (authentication_config_template.changed | default(false))
+    - kubeadm_template.changed
 
 - name: Initializing master
   ansible.builtin.command: "kubeadm init --config={{ kubeadm_config_file }}"

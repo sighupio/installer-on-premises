@@ -1,6 +1,11 @@
 # Structured-authentication equivalent of the legacy --oidc-* flags, rendered only when
 # oidc_extra_audiences is non-empty (see kubeadm.yml.j2 and defaults/main.yml).
+
+{% if kubernetes_version is version('1.34.0', '>=', version_type='semver') %}
 apiVersion: apiserver.config.k8s.io/v1
+{% else %}
+apiVersion: apiserver.config.k8s.io/v1beta1
+{% endif %}
 kind: AuthenticationConfiguration
 jwt:
   - issuer:
@@ -15,7 +20,18 @@ jwt:
     claimMappings:
       username:
         claim: {{ oidc_username_claim | to_json }}
-        prefix: {{ (oidc_username_prefix if oidc_username_prefix != "-" else "") | to_json }}
+{# Replicates the legacy --oidc-username-prefix default: an empty prefix with a claim
+   other than email used to get an implicit issuerURL# prefix from kube-apiserver.
+   The structured config has no such default, so we add it back here. #}
+{% if oidc_username_prefix == "-" %}
+        prefix: {{ "" | to_json }}
+{% elif oidc_username_prefix == "" and oidc_username_claim != "email" %}
+        prefix: {{ (oidc_issuer_url ~ "#") | to_json }}
+{% else %}
+        prefix: {{ oidc_username_prefix | to_json }}
+{% endif %}
       groups:
         claim: {{ oidc_groups_claim | to_json }}
-        prefix: {{ (oidc_groups_prefix if oidc_groups_prefix != "-" else "") | to_json }}
+{# Unlike --oidc-username-prefix, the legacy --oidc-groups-prefix flag never treated "-" as a
+   sentinel for no prefix: it was always a literal value. Pass it through unchanged. #}
+        prefix: {{ oidc_groups_prefix | to_json }}

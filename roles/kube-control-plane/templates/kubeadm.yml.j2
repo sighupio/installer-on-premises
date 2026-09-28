@@ -133,11 +133,14 @@ apiServer:
     pathType: File
 {% endif %}
 {% if oidc_issuer_url != "" and oidc_extra_audiences | default([]) | length > 0 %}
+{# A bind mount of a file stays pinned to its old inode after a config update, so the
+   container never sees the change. Mounting the directory instead resolves the file
+   by name on each access. #}
   - name: authentication-config
-    hostPath: {{ kubernetes_remote_authentication_config }}
-    mountPath: {{ kubernetes_remote_authentication_config }}
+    hostPath: {{ kubernetes_remote_authentication_config | dirname }}
+    mountPath: {{ kubernetes_remote_authentication_config | dirname }}
     readOnly: true
-    pathType: File
+    pathType: Directory
 {% endif %}
 {% if kubernetes_cloud_config != "" and kubernetes_version is version('1.33.0', '<') %}
   - name: cloud
