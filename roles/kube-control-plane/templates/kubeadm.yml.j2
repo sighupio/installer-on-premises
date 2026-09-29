@@ -49,18 +49,10 @@ apiServer:
       value: {{ 'NamespaceLifecycle,LimitRanger,PodNodeSelector,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,EventRateLimit,NodeRestriction,DenyServiceExternalIPs' | to_json }}
     - name: admission-control-config-file
       value: {{ eventratelimit_config_file | default('/etc/kubernetes/admission-config.yaml') | to_json }}
-{% if kubernetes_cloud_provider != "" and kubernetes_version is version('1.33.0', '<') %}
-    - name: cloud-provider
-      value: {{ kubernetes_cloud_provider | to_json }}
-{% endif %}
     - name: kubelet-certificate-authority
       value: {{ kubelet_certificate_authority_file | default('/etc/kubernetes/pki/ca.crt') | to_json }}
     - name: request-timeout
       value: {{ '60s' | to_json }}
-{% if kubernetes_cloud_config != "" and kubernetes_version is version('1.33.0', '<') %}
-    - name: cloud-config
-      value: {{ kubernetes_cloud_config | to_json }}
-{% endif %}
     - name: audit-log-path
       value: {{ (audit_log_dir ~ '/kube-apiserver-audit.log') | to_json }}
     - name: audit-policy-file
@@ -78,20 +70,8 @@ apiServer:
       value: {{ kubernetes_remote_encryption_config | to_json }}
 {% endif %}
 {% if oidc_issuer_url != "" %}
-    - name: oidc-issuer-url
-      value: {{ oidc_issuer_url | to_json }}
-    - name: oidc-client-id
-      value: {{ oidc_client_id | to_json }}
-    - name: oidc-ca-file
-      value: {{ oidc_ca_file | to_json }}
-    - name: oidc-username-claim
-      value: {{ oidc_username_claim | to_json }}
-    - name: oidc-username-prefix
-      value: {{ oidc_username_prefix | to_json }}
-    - name: oidc-groups-claim
-      value: {{ oidc_groups_claim | to_json }}
-    - name: oidc-groups-prefix
-      value: {{ oidc_groups_prefix | to_json }}
+    - name: authentication-config
+      value: {{ kubernetes_remote_authentication_config | to_json }}
 {% endif %}
 {% if service_account_issuer is defined %}
     - name: service-account-issuer
@@ -126,12 +106,15 @@ apiServer:
     readOnly: true
     pathType: File
 {% endif %}
-{% if kubernetes_cloud_config != "" and kubernetes_version is version('1.33.0', '<') %}
-  - name: cloud
-    hostPath: {{ kubernetes_cloud_config }}
-    mountPath: {{ kubernetes_cloud_config }}
+{% if oidc_issuer_url != "" %}
+{# A bind mount of a file stays pinned to its old inode after a config update, so the
+   container never sees the change. Mounting the directory instead resolves the file
+   by name on each access. #}
+  - name: authentication-config
+    hostPath: {{ kubernetes_remote_authentication_config | dirname }}
+    mountPath: {{ kubernetes_remote_authentication_config | dirname }}
     readOnly: true
-    pathType: File
+    pathType: Directory
 {% endif %}
 scheduler:
   extraArgs:

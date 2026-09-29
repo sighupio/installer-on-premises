@@ -87,7 +87,8 @@
     - ansible_facts['distribution'] == "Ubuntu"
   ansible.builtin.find:
     paths: /etc/apt/sources.list.d
-    patterns: "vbernat-ubuntu-haproxy-*.list"
+    patterns:
+      - "*vbernat*haproxy*.list"
   register: haproxy_legacy_ppa_sources
 
 - name: Remove legacy HAProxy PPA source files (Ubuntu)

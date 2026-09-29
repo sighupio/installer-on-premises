@@ -16,10 +16,8 @@ kubernetes_apiserver_advertise_address: "{{ ansible_facts['default_ipv4'].addres
 kubernetes_pod_cidr: "10.32.0.0/16"
 kubernetes_svc_cidr: "10.96.0.0/16"
 kubernetes_cluster_name: "sighup-prod"
-# cloud-provider flag removed from kube-apiserver in K8s v1.33+
-# Still used by kube-controller-manager and kubelet; also in kube-apiserver in supported versions 1.31 and 1.32
+# cloud-provider/cloud-config flags removed from kube-apiserver in K8s v1.33+; still used by kube-controller-manager and kubelet
 kubernetes_cloud_provider: ""
-# cloud-config flag removed from kube-apiserver in K8s v1.33+
 kubernetes_cloud_config: ""
 # Use kubernetes_apiserver_certSANs to set extra alternative names in the API Server signing certificate
 # Accepts a list of strings, in which each string can be either an IP Address or a domain
@@ -48,36 +46,23 @@ etcd:
 ## OIDC
 oidc_issuer_url: ""
 oidc_client_id: ""
-oidc_ca_file: /etc/ssl/certs/ca-certificates.crt
+oidc_ca_file_default: /etc/ssl/certs/ca-certificates.crt
+# certificateAuthority is only set in authentication-config.yml.j2 when this differs from
+# oidc_ca_file_default; at the default, the apiserver already trusts the system CA bundle.
+oidc_ca_file: "{{ oidc_ca_file_default }}"
 oidc_username_claim: email
 oidc_username_prefix: "oidc:"
 oidc_groups_claim: groups
 oidc_groups_prefix: "oidc:"
+# Additional accepted token audiences besides oidc_client_id, listed alongside it under
+# AuthenticationConfiguration's jwt[].issuer.audiences (audienceMatchPolicy: MatchAny).
+oidc_extra_audiences: []
+kubernetes_remote_authentication_config: /etc/kubernetes/oidc/authentication-config.yaml
 
 upgrade: False
 
 dependencies:
   # To pin dependencies for each Kubernetes version
-  "1.31.4":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.31.7":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.31.12":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.32.3":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.32.4":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.32.8":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.32.11":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.33.4":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.33.7":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
-  "1.33.12":
-    kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.34.4":
     kubernetes_image_registry: "registry.sighup.io/fury/on-premises"
   "1.34.8":

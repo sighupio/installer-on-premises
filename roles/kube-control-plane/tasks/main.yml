@@ -47,6 +47,33 @@
     dest: "{{ kubernetes_remote_encryption_config }}"
   when: kubernetes_encryption_config != ""
 
+- name: Load OIDC CA certificate content
+  ansible.builtin.slurp:
+    src: "{{ oidc_ca_file }}"
+  register: oidc_ca_content
+  when: oidc_issuer_url != "" and oidc_ca_file != oidc_ca_file_default
+
+# A bind mount of a file stays pinned to its old inode when this task replaces it, so the
+# container never sees later changes. Mounting the directory avoids that.
+# Kubernetes uses the same trick for ConfigMap and Secret volumes.
+- name: Ensuring dedicated OIDC config directory exists
+  ansible.builtin.file:
+    path: "{{ kubernetes_remote_authentication_config | dirname }}"
+    owner: root
+    group: root
+    mode: "0700"
+    state: directory
+  when: oidc_issuer_url != ""
+
+- name: Ensuring authentication config is present on machine
+  ansible.builtin.template:
+    src: authentication-config.yml.j2
+    dest: "{{ kubernetes_remote_authentication_config }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: oidc_issuer_url != ""
+
 - name: Ensuring kubeadm.yml config file is present on machine
   ansible.builtin.template:
     src: kubeadm.yml.j2
@@ -82,16 +109,13 @@
     src: patches/kube-scheduler0+json.json.j2
     dest: "{{ kubeadm_patches_path }}/kube-scheduler0+json.json"
 
-# Kubernetes 1.32+ introduces the readinessProbe in kube-scheduler, so
-# we need two patch files to manage this. Kubeadm applies all patches that follow the
-# naming pattern kube-scheduler<INDEX>+json.json, where <INDEX> determines application order.
-# Now we have 2 patches, the index 0 common for all versions and the index 1
-# that's applied on top only for K8s 1.32.0 or newer.
-- name: Copy kube-scheduler patch files for versions greater than or equal to 1.32.0
+# Kubernetes 1.32+ introduces the readinessProbe in kube-scheduler, so we need two patch
+# files to manage this. Kubeadm applies all patches that follow the naming pattern
+# kube-scheduler<INDEX>+json.json, where <INDEX> determines application order.
+- name: Copy kube-scheduler readinessProbe patch file
   ansible.builtin.template:
     src: patches/kube-scheduler1+json.json.j2
     dest: "{{ kubeadm_patches_path }}/kube-scheduler1+json.json"
-  when: kubernetes_version is version('1.32.0', 'ge', version_type='semver')
 
 - name: Copy kube-controller-manager patch files
   ansible.builtin.template:
