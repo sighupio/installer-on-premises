@@ -88,7 +88,6 @@
   ansible.builtin.find:
     paths: /etc/apt/sources.list.d
     patterns:
-      - "vbernat-ubuntu-haproxy-*.list"
       - "*vbernat*haproxy*.list"
   register: haproxy_legacy_ppa_sources
 
