@@ -19,17 +19,25 @@
 - name: Upgrade kubernetes master with kubeadm
   ansible.builtin.command: kubeadm upgrade apply --config {{ kubeadm_upgrade_config_file }}
 
-# kubeadm upgrades CoreDNS and kube-proxy only on the last control plane node, and only if it sees
-# the new kube-apiserver Pod on every control plane node; otherwise it skips them without an error.
-# We compare the images in the cluster with the ones kubeadm expects, to fail instead.
-- name: Verify CoreDNS and kube-proxy upgrade
-  when: inventory_hostname == ansible_play_hosts_all | last
-  block:
-    - name: Get the images expected by kubeadm
-      ansible.builtin.command: kubeadm config images list --config {{ kubeadm_config_file }}
-      register: kubeadm_expected_images
-      changed_when: false
+# kubeadm upgrades CoreDNS and kube-proxy only when it sees the new kube-apiserver Pod on every
+# control plane node; otherwise it skips them without an error. When all the kube-apiserver Pods run
+# the new image, we compare the CoreDNS and kube-proxy images with the ones kubeadm expects, to fail
+# instead. furyctl runs this playbook once per node with --limit, thus we cannot rely on the play hosts.
+- name: Get the images expected by kubeadm
+  ansible.builtin.command: kubeadm config images list --config {{ kubeadm_config_file }}
+  register: kubeadm_expected_images
+  changed_when: false
 
+- name: Get the kube-apiserver images of the control plane nodes
+  ansible.builtin.command: >
+    kubectl -n kube-system get pods -l component=kube-apiserver --kubeconfig /etc/kubernetes/admin.conf
+    -o jsonpath={.items[*].spec.containers[0].image}
+  register: apiserver_images
+  changed_when: false
+
+- name: Verify CoreDNS and kube-proxy upgrade
+  when: apiserver_images.stdout.split() | difference(kubeadm_expected_images.stdout_lines) | length == 0
+  block:
     - name: Get the CoreDNS and kube-proxy images in the cluster
       ansible.builtin.command: >
         kubectl -n kube-system get {{ item }} --kubeconfig /etc/kubernetes/admin.conf
