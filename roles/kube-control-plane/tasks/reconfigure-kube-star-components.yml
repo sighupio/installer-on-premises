@@ -87,8 +87,12 @@
 
 # By passing only the ClusterConfiguration object, the InitConfiguration patches are lost.
 # To fix this we need to pass the InitConfiguration object as well, using the kubeadm.yml.
+# During an upgrade we skip this task and let `kubeadm upgrade apply` write the manifests. If we
+# write them here, kubeadm finds them unchanged and does not wait for the new kube-apiserver Pod, so
+# on the last control plane node it skips the CoreDNS and kube-proxy upgrade.
 - name: Reflect ClusterConfiguration changes on control plane components
   ansible.builtin.shell: |
     kubeadm init phase control-plane all --config {{ kubeadm_config_file }}
   changed_when: true
   notify: Restart kubelet
+  when: not upgrade
