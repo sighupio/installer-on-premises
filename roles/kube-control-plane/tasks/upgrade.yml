@@ -19,6 +19,36 @@
 - name: Upgrade kubernetes master with kubeadm
   ansible.builtin.command: kubeadm upgrade apply --config {{ kubeadm_upgrade_config_file }}
 
+# kubeadm upgrades CoreDNS and kube-proxy only on the last control plane node, and only if it sees
+# the new kube-apiserver Pod on every control plane node; otherwise it skips them without an error.
+# We compare the images in the cluster with the ones kubeadm expects, to fail instead.
+- name: Verify CoreDNS and kube-proxy upgrade
+  when: inventory_hostname == ansible_play_hosts_all | last
+  block:
+    - name: Get the images expected by kubeadm
+      ansible.builtin.command: kubeadm config images list --config {{ kubeadm_config_file }}
+      register: kubeadm_expected_images
+      changed_when: false
+
+    - name: Get the CoreDNS and kube-proxy images in the cluster
+      ansible.builtin.command: >
+        kubectl -n kube-system get {{ item }} --kubeconfig /etc/kubernetes/admin.conf
+        -o jsonpath={.spec.template.spec.containers[0].image}
+      loop: "{{ ['deployment/coredns'] + ([] if 'addon/kube-proxy' in kubeadm_skip_phases else ['daemonset/kube-proxy']) }}"
+      register: addon_images
+      changed_when: false
+
+    - name: Check that CoreDNS and kube-proxy have been upgraded
+      ansible.builtin.assert:
+        that: item.stdout in kubeadm_expected_images.stdout_lines
+        fail_msg: >-
+          {{ item.item }} runs {{ item.stdout }}, which is not an image of Kubernetes {{ kubernetes_version }}
+          ({{ kubeadm_expected_images.stdout_lines | join(', ') }}). kubeadm skipped the addons upgrade.
+        quiet: true
+      loop: "{{ addon_images.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
 - name: Generate KubeletConfiguration patches file from template
   ansible.builtin.template:
     src: KubeletConfiguration-v1beta1.yml.j2
