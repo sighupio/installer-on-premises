@@ -196,7 +196,7 @@
     name: keepalived
     state: present
 
-- name: Copy keepliaved configuration file
+- name: Copy keepalived configuration file
   when: keepalived_cluster|bool
   ansible.builtin.template:
     src: "keepalived.conf.j2"
