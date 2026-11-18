@@ -28,6 +28,9 @@ platform:
   os: linux
   arch: amd64
 
+node:
+  performance: low
+
 steps: []
 
 ---
@@ -41,6 +44,9 @@ depends_on:
 platform:
   os: linux
   arch: amd64
+
+node:
+  performance: low
 
 trigger:
   ref:
